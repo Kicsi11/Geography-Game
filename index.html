@@ -26,13 +26,11 @@
     </div>
   </header>
 
-  <!-- Top Ad Banner Placeholder for Google AdSense -->
   <div class="ad-container top-ad">
     <div class="ad-placeholder">Advertisement Space</div>
   </div>
 
   <main>
-    <!-- Main Game View -->
     <section id="game-view" class="view">
       <div class="stats-card">
         <div class="stat-item">
@@ -50,8 +48,11 @@
         <div class="card-header">
           <span class="badge">Round Language Challenge</span>
         </div>
+        
         <blockquote id="sentence-prompt">"Loading sentence..."</blockquote>
         
+        <div id="feedback-msg" class="feedback-msg"></div>
+
         <div class="guess-form">
           <div class="autocomplete-wrapper">
             <input type="text" id="language-input" placeholder="Type a language (e.g. Romanian, Romani)..." autocomplete="off">
@@ -59,8 +60,6 @@
           </div>
           <button id="submit-btn">Guess ➔</button>
         </div>
-
-        <div id="feedback-msg" class="feedback-msg"></div>
       </div>
 
       <div class="card history-card">
@@ -71,7 +70,6 @@
       </div>
     </section>
 
-    <!-- About & AdSense Requirements View -->
     <section id="about-view" class="view hidden">
       <div class="card content-card">
         <h2>About Glotle</h2>
@@ -97,7 +95,6 @@
     </section>
   </main>
 
-  <!-- Bottom Ad Banner Placeholder for Google AdSense -->
   <div class="ad-container bottom-ad">
     <div class="ad-placeholder">Advertisement Space</div>
   </div>
