@@ -166,7 +166,7 @@ function triggerFlash(className) {
 
 // Share Score & Game Link to Clipboard
 shareBtn.addEventListener("click", () => {
-  const gameUrl = glotle.net;
+  const gameUrl = https://kicsi11.github.io/Geography-Game/;
   const shareText = `🌐 Glotle Score\nStreak: ${streak} 🔥\nBest Streak: ${bestStreak} 🏆\nPlay here: ${gameUrl}`;
   
   if (navigator.clipboard && window.isSecureContext) {
