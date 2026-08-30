@@ -6,44 +6,46 @@
     <title>LingoBounds</title>
     <link rel="stylesheet" href="https://unpkg.com" />
     <style>
-        body {
+        html, body {
             margin: 0;
+            padding: 0;
+            height: 100%;
             background-color: #121212;
-            color: white;
             font-family: system-ui, sans-serif;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
+            overflow: hidden;
         }
-        #nav {
+        #nav-bar {
+            height: 50px;
             background-color: #1a1a1a;
-            padding: 15px;
-            text-align: center;
-            font-weight: bold;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
             letter-spacing: 2px;
+            font-size: 1.1rem;
+            border-bottom: 1px solid #2a2a2a;
         }
-        #map {
-            flex: 1;
+        #map-container {
+            height: calc(100% - 50px);
             width: 100%;
         }
     </style>
 </head>
 <body>
 
-    <div id="nav">LINGOBOUNDS</div>
-    <div id="map"></div>
+    <div id="nav-bar">LINGOBOUNDS</div>
+    <div id="map-container"></div>
 
     <script src="https://unpkg.com"></script>
     <script>
-        const map = L.map('map').setView([47.0, 15.0], 4);
+        const map = L.map('map-container', {
+            zoomControl: false
+        }).setView([47.0, 19.5], 4);
         
         L.tileLayer('https://{s}://{z}/{x}/{y}{r}.png', {
-            attribution: 'OpenStreetMap'
+            attribution: '&copy; OpenStreetMap'
         }).addTo(map);
-
-        map.on('click', function(e) {
-            alert("You clicked coordinates: " + e.latlng.lat + ", " + e.latlng.lng);
-        });
     </script>
 
 </body>
