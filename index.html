@@ -4,48 +4,122 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LingoBounds</title>
-    <link rel="stylesheet" href="https://unpkg.com" />
     <style>
         html, body {
             margin: 0;
             padding: 0;
             height: 100%;
             background-color: #121212;
-            font-family: system-ui, sans-serif;
-            overflow: hidden;
-        }
-        #nav-bar {
-            height: 50px;
-            background-color: #1a1a1a;
             color: #ffffff;
+            font-family: system-ui, -apple-system, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #header-bar {
+            width: 100%;
+            height: 60px;
+            background-color: #1a1a1a;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 700;
-            letter-spacing: 2px;
-            font-size: 1.1rem;
+            font-weight: 800;
+            letter-spacing: 3px;
+            font-size: 1.25rem;
             border-bottom: 1px solid #2a2a2a;
         }
-        #map-container {
-            height: calc(100% - 50px);
+        #game-container {
             width: 100%;
+            max-width: 450px;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            margin-top: 40px;
+        }
+        #sentence-card {
+            background-color: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 12px;
+            padding: 30px 20px;
+            text-align: center;
+            font-size: 1.35rem;
+            font-weight: 500;
+            line-height: 1.6;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+        #input-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        input {
+            width: 100%;
+            height: 54px;
+            background-color: #1a1a1a;
+            border: 2px solid #2a2a2a;
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 1.1rem;
+            padding: 0 15px;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        input:focus {
+            border-color: #4a4a4a;
+        }
+        button {
+            width: 100%;
+            height: 54px;
+            background-color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            color: #121212;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        button:active {
+            opacity: 0.9;
         }
     </style>
 </head>
 <body>
 
-    <div id="nav-bar">LINGOBOUNDS</div>
-    <div id="map-container"></div>
+    <div id="header-bar">LINGOBOUNDS</div>
 
-    <script src="https://unpkg.com"></script>
-    <script>
-        const map = L.map('map-container', {
-            zoomControl: false
-        }).setView([47.0, 19.5], 4);
+    <div id="game-container">
+        <div id="sentence-card">"Akkor döntsd el, hogy mit szeretnél csinálni."</div>
         
-        L.tileLayer('https://{s}://{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; OpenStreetMap'
-        }).addTo(map);
+        <div id="input-wrapper">
+            <input type="text" id="guess-input" list="languages-list" placeholder="Type a language...">
+            <datalist id="languages-list">
+                <option value="Romani">
+                <option value="Romanian">
+                <option value="Romansh">
+                <option value="Hungarian">
+                <option value="Finnish">
+                <option value="Basque">
+            </datalist>
+            <button id="submit-btn">SUBMIT GUESS</button>
+        </div>
+    </div>
+
+    <script>
+        const submitBtn = document.getElementById('submit-btn');
+        const guessInput = document.getElementById('guess-input');
+
+        submitBtn.addEventListener('click', () => {
+            const currentGuess = guessInput.value.trim();
+            if (currentGuess) {
+                alert('You guessed: ' + currentGuess);
+                guessInput.value = '';
+            }
+        });
     </script>
 
 </body>
