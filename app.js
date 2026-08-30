@@ -46,10 +46,12 @@ const flashOverlay = document.getElementById("flash-overlay");
 const themeToggleBtn = document.getElementById("theme-toggle");
 const shareBtn = document.getElementById("share-btn");
 
-// Modal Elements
+// Modal & Navigation Elements
 const statsModalBtn = document.getElementById("stats-modal-btn");
 const statsModal = document.getElementById("stats-modal");
 const closeModalBtn = document.getElementById("close-modal-btn");
+const modalAboutBtn = document.getElementById("modal-about-btn");
+const backToGameBtn = document.getElementById("back-to-game-btn");
 
 // Initialize Game
 bestStreakEl.innerHTML = `${bestStreak} <span class="trophy-icon">🏆</span>`;
@@ -194,6 +196,21 @@ closeModalBtn.addEventListener("click", () => {
   statsModal.classList.add("hidden");
 });
 
+// Navigation & About Page Handling from Settings
+modalAboutBtn.addEventListener("click", () => {
+  statsModal.classList.add("hidden");
+  showView("about-view");
+});
+
+backToGameBtn.addEventListener("click", () => {
+  showView("game-view");
+});
+
+function showView(viewId) {
+  document.querySelectorAll(".view").forEach(v => v.classList.add("hidden"));
+  document.getElementById(viewId).classList.remove("hidden");
+}
+
 // Share Button
 shareBtn.addEventListener("click", () => {
   const gameUrl = "https://kicsi11.github.io/Geography-Game/";
@@ -215,27 +232,6 @@ shareBtn.addEventListener("click", () => {
 });
 
 submitBtn.addEventListener("click", makeGuess);
-
-// View Switching
-document.getElementById("nav-game-btn").addEventListener("click", (e) => {
-  showView("game-view");
-  setActiveNav(e.target);
-});
-
-document.getElementById("nav-about-btn").addEventListener("click", (e) => {
-  showView("about-view");
-  setActiveNav(e.target);
-});
-
-function showView(viewId) {
-  document.querySelectorAll(".view").forEach(v => v.classList.add("hidden"));
-  document.getElementById(viewId).classList.remove("hidden");
-}
-
-function setActiveNav(btn) {
-  document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
-  btn.classList.add("active");
-}
 
 // Dark Mode Toggle inside Modal Settings
 themeToggleBtn.addEventListener("click", () => {
