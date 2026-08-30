@@ -7,7 +7,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <!-- Canvas Confetti Library -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <link rel="stylesheet" href="style.css">
 </head>
@@ -21,24 +20,24 @@
         <h1>Glotle</h1>
       </div>
       <nav>
-        <button id="nav-game-btn" class="nav-btn active">Play</button>
+        <button id="nav-game-btn" class="nav-btn active">Endless</button>
+        <button id="nav-daily-btn" class="nav-btn">Daily Challenge 📅</button>
+        <button id="stats-modal-btn" class="icon-btn" title="Statistics">📊</button>
         <button id="nav-about-btn" class="nav-btn">About & Legal</button>
         <button id="theme-toggle" class="icon-btn" title="Toggle Theme">🌙</button>
       </nav>
     </div>
   </header>
 
-  <!-- Top Ad Banner Placeholder for Google AdSense -->
   <div class="ad-container top-ad">
     <div class="ad-placeholder">Advertisement Space</div>
   </div>
 
   <main>
-    <!-- Main Game View -->
     <section id="game-view" class="view">
       <div class="stats-card">
         <div class="stat-item">
-          <span class="stat-label">Current Streak</span>
+          <span class="stat-label" id="mode-label">Endless Streak</span>
           <span class="stat-value" id="streak-count">0 <span class="fire-icon">🔥</span></span>
         </div>
         <div class="stat-divider"></div>
@@ -52,7 +51,7 @@
 
       <div class="card game-card">
         <div class="card-header">
-          <span class="badge">Round Language Challenge</span>
+          <span class="badge" id="round-badge">Round Language Challenge</span>
         </div>
         
         <blockquote id="sentence-prompt">"Loading sentence..."</blockquote>
@@ -69,7 +68,6 @@
       </div>
     </section>
 
-    <!-- About & AdSense Requirements View -->
     <section id="about-view" class="view hidden">
       <div class="card content-card">
         <h2>About Glotle</h2>
@@ -95,7 +93,54 @@
     </section>
   </main>
 
-  <!-- Bottom Ad Banner Placeholder for Google AdSense -->
+  <div id="stats-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>Your Statistics 📊</h2>
+        <button id="close-modal-btn" class="close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="stats-grid">
+          <div class="stat-box">
+            <span class="stat-number" id="stat-played">0</span>
+            <span class="stat-sub">Played</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-number" id="stat-winrate">0%</span>
+            <span class="stat-sub">Win %</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-number" id="stat-curr-streak">0</span>
+            <span class="stat-sub">Current Streak</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-number" id="stat-best-streak">0</span>
+            <span class="stat-sub">Best Streak</span>
+          </div>
+        </div>
+
+        <hr class="divider">
+
+        <h3>Global Daily Challenge Averages 🌍</h3>
+        <p class="stats-desc">See how you stack up against worldwide daily players today:</p>
+        <div class="global-stats-list">
+          <div class="global-stat-row">
+            <span>Average Score Today:</span>
+            <strong>3.8 / 5</strong>
+          </div>
+          <div class="global-stat-row">
+            <span>Global Win Rate Today:</span>
+            <strong>76%</strong>
+          </div>
+          <div class="global-stat-row">
+            <span>Hardest Language Today:</span>
+            <strong>Romansh</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="ad-container bottom-ad">
     <div class="ad-placeholder">Advertisement Space</div>
   </div>
