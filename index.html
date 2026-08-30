@@ -3,887 +3,1503 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#121212">
-<title>LingoClues</title>
+<title>LingoBounds</title>
 <style>
+:root {
+    --background: #121212;
+    --surface: #191919;
+    --surface-raised: #202020;
+    --surface-hover: #272727;
+    --border: #303030;
+    --text: #f4f4f4;
+    --muted: #909090;
+    --accent: #8b7cff;
+    --accent-bright: #a99eff;
+    --green: #52d69a;
+    --red: #ff657a;
+    --gold: #e9b949;
+    --silver: #b9c0ca;
+    --bronze: #c98962;
+    --shadow: 0 20px 60px rgba(0, 0, 0, .4);
+}
+
 * {
-  box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 html,
 body {
-  margin: 0;
-  min-height: 100%;
-  background: #121212;
-  color: #fff;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    width: 100%;
+    min-height: 100%;
+    margin: 0;
 }
 
 body {
-  display: flex;
-  justify-content: center;
+    background: var(--background);
+    color: var(--text);
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    overflow-x: hidden;
 }
 
 button,
 input {
-  font: inherit;
+    font: inherit;
 }
 
-.app {
-  width: 100%;
-  max-width: 620px;
-  min-height: 100vh;
-  padding: 22px 18px 32px;
-  display: flex;
-  flex-direction: column;
+button {
+    border: 0;
+    cursor: pointer;
 }
 
-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 4px 0 28px;
+.app-shell {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
-.logo {
-  font-size: 1.15rem;
-  font-weight: 900;
-  letter-spacing: 0.14em;
+.topbar {
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(18, 18, 18, .94);
+    backdrop-filter: blur(18px);
+    position: relative;
+    z-index: 10;
 }
 
-.streak {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: #d7d7d7;
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 220px;
 }
 
-.fire {
-  font-size: 1.2rem;
+.brand-mark {
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    border-radius: 11px;
+    color: #fff;
+    font-weight: 800;
+    background: linear-gradient(135deg, #7768ff, #9c73ff);
+    box-shadow: 0 8px 24px rgba(139, 124, 255, .25);
 }
 
-.game {
-  width: 100%;
+.brand-name {
+    font-weight: 750;
+    letter-spacing: -.03em;
+    font-size: 19px;
+}
+
+.match-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.tier-badge {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    border: 1px solid rgba(201, 137, 98, .28);
+    background: rgba(201, 137, 98, .09);
+    color: var(--bronze);
+    padding: 7px 11px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.tier-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.elo {
+    font-size: 13px;
+    color: var(--muted);
+    padding-left: 3px;
+}
+
+.elo strong {
+    color: var(--text);
+    font-weight: 700;
+}
+
+.profile-button {
+    width: 38px;
+    height: 38px;
+    margin-left: 18px;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    background: var(--surface-raised);
+    color: #aaa;
+    display: grid;
+    place-items: center;
+}
+
+.profile-button svg {
+    width: 18px;
+    height: 18px;
+}
+
+main {
+    width: 100%;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 22px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.match-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding: 4px 4px 0;
 }
 
 .eyebrow {
-  margin: 0 0 9px;
-  color: #8c8c8c;
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+    color: var(--accent-bright);
+    text-transform: uppercase;
+    letter-spacing: .16em;
+    font-size: 10px;
+    font-weight: 800;
 }
 
-h1 {
-  margin: 0;
-  font-size: clamp(2rem, 10vw, 3.4rem);
-  line-height: 1;
-  letter-spacing: -0.055em;
+.match-title {
+    font-size: clamp(21px, 2vw, 28px);
+    letter-spacing: -.04em;
+    margin: 5px 0 0;
 }
 
-.subtitle {
-  margin: 14px 0 28px;
-  color: #9b9b9b;
-  font-size: 0.95rem;
-  line-height: 1.5;
+.round-label {
+    color: var(--muted);
+    font-size: 12px;
 }
 
-.clues {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+.workspace {
+    flex: 1;
+    min-height: 680px;
+    display: grid;
+    grid-template-columns: minmax(310px, .75fr) minmax(0, 1.7fr);
+    gap: 16px;
 }
 
-.clue {
-  display: flex;
-  gap: 13px;
-  align-items: flex-start;
-  padding: 16px;
-  border: 1px solid #2b2b2b;
-  border-radius: 14px;
-  background: #181818;
-  animation: appear 0.2s ease-out;
+.panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
 }
 
-.clue-number {
-  flex: 0 0 auto;
-  width: 25px;
-  height: 25px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  background: #292929;
-  color: #aaa;
-  font-size: 0.75rem;
-  font-weight: 800;
+.challenge-panel {
+    display: flex;
+    flex-direction: column;
 }
 
-.clue-text {
-  margin: 1px 0 0;
-  color: #ededed;
-  font-size: 0.96rem;
-  line-height: 1.45;
+.panel-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 21px;
+    border-bottom: 1px solid var(--border);
 }
 
-.hidden {
-  display: none;
+.panel-title {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 750;
 }
 
-.reveal {
-  width: 100%;
-  margin: 16px 0 25px;
-  padding: 15px 18px;
-  border: 1px solid #3a3a3a;
-  border-radius: 13px;
-  background: #222;
-  color: #fff;
-  font-weight: 800;
-  cursor: pointer;
-  transition: background 0.15s, transform 0.15s;
+.panel-subtitle {
+    color: var(--muted);
+    font-size: 11px;
+    margin-top: 3px;
 }
 
-.reveal:hover {
-  background: #2c2c2c;
+.timer {
+    position: relative;
+    width: 50px;
+    height: 50px;
+    display: grid;
+    place-items: center;
 }
 
-.reveal:active,
-.submit:active,
-.share:active {
-  transform: scale(0.98);
+.timer svg {
+    position: absolute;
+    inset: 0;
+    transform: rotate(-90deg);
 }
 
-.guess-area {
-  padding-top: 2px;
+.timer-track,
+.timer-progress {
+    fill: none;
+    stroke-width: 4;
 }
 
-label {
-  display: block;
-  margin-bottom: 9px;
-  color: #bdbdbd;
-  font-size: 0.85rem;
-  font-weight: 700;
+.timer-track {
+    stroke: #303030;
 }
 
-.input-row {
-  display: flex;
-  gap: 9px;
+.timer-progress {
+    stroke: var(--accent);
+    stroke-linecap: round;
+    transition: stroke-dashoffset .2s linear, stroke .3s ease;
 }
 
-input {
-  width: 100%;
-  min-width: 0;
-  padding: 15px 14px;
-  border: 1px solid #343434;
-  border-radius: 12px;
-  outline: none;
-  background: #1b1b1b;
-  color: #fff;
-  transition: border-color 0.15s, box-shadow 0.15s;
+.timer-number {
+    font-size: 13px;
+    font-weight: 800;
 }
 
-input::placeholder {
-  color: #666;
+.challenge-content {
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    flex: 1;
 }
 
-input:focus {
-  border-color: #707070;
-  box-shadow: 0 0 0 3px rgba(255,255,255,0.05);
+.language-prompt {
+    padding: 22px;
+    border: 1px solid #303030;
+    border-radius: 14px;
+    background: linear-gradient(145deg, #1d1d1d, #181818);
 }
 
-.submit {
-  flex: 0 0 auto;
-  padding: 0 20px;
-  border: 0;
-  border-radius: 12px;
-  background: #fff;
-  color: #111;
-  font-weight: 900;
-  cursor: pointer;
-  transition: transform 0.15s, opacity 0.15s;
+.prompt-label {
+    color: var(--muted);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: .13em;
+    font-weight: 700;
 }
 
-.submit:disabled {
-  opacity: 0.4;
-  cursor: default;
+.prompt-text {
+    margin: 17px 0 4px;
+    font-size: clamp(21px, 2.1vw, 29px);
+    line-height: 1.2;
+    letter-spacing: -.035em;
+    font-weight: 600;
 }
 
-.message {
-  min-height: 24px;
-  margin: 10px 2px 0;
-  color: #929292;
-  font-size: 0.82rem;
+.prompt-translation {
+    color: #777;
+    font-size: 12px;
 }
 
-.modal-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 20;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  background: rgba(0,0,0,0.76);
-  backdrop-filter: blur(7px);
+.audio-player {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 13px;
+    border: 1px solid var(--border);
+    border-radius: 13px;
+    background: #151515;
 }
 
-.modal-backdrop.open {
-  display: flex;
+.play-button {
+    width: 40px;
+    height: 40px;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    color: white;
+    background: var(--accent);
+    display: grid;
+    place-items: center;
 }
 
-.modal {
-  width: 100%;
-  max-width: 390px;
-  padding: 30px 24px 24px;
-  border: 1px solid #303030;
-  border-radius: 22px;
-  background: #191919;
-  text-align: center;
-  box-shadow: 0 20px 70px rgba(0,0,0,0.45);
-  animation: modalIn 0.22s ease-out;
+.play-button svg {
+    width: 17px;
+    height: 17px;
+    margin-left: 2px;
 }
 
-.success-mark {
-  width: 54px;
-  height: 54px;
-  margin: 0 auto 17px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  background: #fff;
-  color: #111;
-  font-size: 1.45rem;
-  font-weight: 900;
+.audio-info {
+    flex: 1;
 }
 
-.modal h2 {
-  margin: 0;
-  font-size: 1.65rem;
-  letter-spacing: -0.035em;
+.audio-title {
+    font-size: 12px;
+    font-weight: 700;
 }
 
-.answer {
-  margin: 8px 0 21px;
-  color: #999;
-  font-size: 0.92rem;
+.audio-wave {
+    height: 25px;
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 3px;
 }
 
-.score {
-  margin: 0;
-  font-size: 3.5rem;
-  font-weight: 900;
-  line-height: 1;
-  letter-spacing: -0.07em;
+.audio-wave span {
+    width: 3px;
+    border-radius: 5px;
+    background: #666;
+    animation: wave 1s ease-in-out infinite;
+    animation-play-state: paused;
 }
 
-.score-label {
-  margin: 7px 0 22px;
-  color: #777;
-  font-size: 0.76rem;
-  font-weight: 700;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
+.audio-player.playing .audio-wave span {
+    animation-play-state: running;
 }
 
-.share {
-  width: 100%;
-  padding: 14px;
-  border: 0;
-  border-radius: 12px;
-  background: #fff;
-  color: #111;
-  font-weight: 900;
-  cursor: pointer;
+.audio-wave span:nth-child(1) { height: 9px; }
+.audio-wave span:nth-child(2) { height: 17px; animation-delay: .08s; }
+.audio-wave span:nth-child(3) { height: 12px; animation-delay: .16s; }
+.audio-wave span:nth-child(4) { height: 22px; animation-delay: .24s; }
+.audio-wave span:nth-child(5) { height: 15px; animation-delay: .32s; }
+.audio-wave span:nth-child(6) { height: 10px; animation-delay: .4s; }
+.audio-wave span:nth-child(7) { height: 20px; animation-delay: .48s; }
+.audio-wave span:nth-child(8) { height: 13px; animation-delay: .56s; }
+.audio-wave span:nth-child(9) { height: 18px; animation-delay: .64s; }
+.audio-wave span:nth-child(10) { height: 8px; animation-delay: .72s; }
+
+@keyframes wave {
+    50% { transform: scaleY(.45); }
 }
 
-.share-status {
-  min-height: 19px;
-  margin: 10px 0 0;
-  color: #858585;
-  font-size: 0.76rem;
+.hint-card {
+    display: flex;
+    gap: 12px;
+    padding: 14px;
+    border: 1px solid var(--border);
+    border-radius: 13px;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.5;
 }
 
-@keyframes appear {
-  from {
+.hint-icon {
+    width: 26px;
+    height: 26px;
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    border-radius: 8px;
+    background: rgba(139, 124, 255, .12);
+    color: var(--accent-bright);
+    font-weight: 800;
+}
+
+.challenge-footer {
+    margin-top: auto;
+    padding-top: 3px;
+}
+
+.status-row {
+    display: flex;
+    justify-content: space-between;
+    color: var(--muted);
+    font-size: 11px;
+    margin-bottom: 8px;
+}
+
+.confidence {
+    height: 5px;
+    background: #292929;
+    border-radius: 99px;
+    overflow: hidden;
+}
+
+.confidence div {
+    width: 0;
+    height: 100%;
+    background: var(--accent);
+    transition: width .3s;
+}
+
+.map-panel {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.map-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 17px;
+    border-bottom: 1px solid var(--border);
+}
+
+.map-tool {
+    padding: 8px 10px;
+    border-radius: 8px;
+    color: var(--muted);
+    background: transparent;
+    font-size: 11px;
+}
+
+.map-tool.active {
+    color: var(--text);
+    background: #292929;
+}
+
+.map-legend {
+    margin-left: auto;
+    display: flex;
+    gap: 12px;
+    font-size: 10px;
+    color: var(--muted);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.legend-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+}
+
+.legend-hungarian { background: #a989e8; }
+.legend-slavic { background: #6286ad; }
+.legend-germanic { background: #789b82; }
+.legend-romance { background: #c79561; }
+
+.map-stage {
+    position: relative;
+    flex: 1;
+    min-height: 500px;
+    background:
+        radial-gradient(circle at 48% 45%, rgba(139, 124, 255, .06), transparent 34%),
+        #151515;
+    overflow: hidden;
+}
+
+.map-grid {
+    position: absolute;
+    inset: 0;
+    opacity: .17;
+    background-image:
+        linear-gradient(#393939 1px, transparent 1px),
+        linear-gradient(90deg, #393939 1px, transparent 1px);
+    background-size: 46px 46px;
+}
+
+.map-svg {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    z-index: 1;
+}
+
+.country {
+    stroke: #111;
+    stroke-width: 1.6;
+    vector-effect: non-scaling-stroke;
+    transition: transform .18s, filter .18s, fill .18s;
+    cursor: pointer;
+}
+
+.country:hover {
+    filter: brightness(1.25);
+}
+
+.country.hungarian {
+    fill: #806bb1;
+}
+
+.country.hungarian:hover {
+    fill: #a18bcf;
+}
+
+.country.slavic {
+    fill: #4e6b8b;
+}
+
+.country.germanic {
+    fill: #5d7865;
+}
+
+.country.romance {
+    fill: #936f4c;
+}
+
+.country.balkan {
+    fill: #66566f;
+}
+
+.country.neutral {
+    fill: #383838;
+}
+
+.country-label {
+    fill: #ddd;
+    font-size: 10px;
+    font-weight: 700;
+    text-anchor: middle;
+    pointer-events: none;
+    paint-order: stroke;
+    stroke: #151515;
+    stroke-width: 3px;
+    stroke-linejoin: round;
+}
+
+.zone-glow {
+    fill: none;
+    stroke: #b8a9ff;
+    stroke-width: 2;
+    opacity: .6;
+    stroke-dasharray: 5 4;
+    pointer-events: none;
+}
+
+.map-footer {
+    position: absolute;
+    left: 17px;
+    bottom: 15px;
+    z-index: 3;
+    color: #6d6d6d;
+    font-size: 10px;
+}
+
+.zoom-controls {
+    position: absolute;
+    right: 17px;
+    bottom: 15px;
+    z-index: 3;
+    display: flex;
+    gap: 5px;
+}
+
+.zoom-controls button {
+    width: 31px;
+    height: 31px;
+    border: 1px solid #343434;
+    border-radius: 8px;
+    background: rgba(24, 24, 24, .9);
+    color: #aaa;
+    font-size: 16px;
+}
+
+.guess-card {
+    position: absolute;
+    z-index: 8;
+    width: min(330px, calc(100% - 30px));
+    left: 50%;
+    bottom: 24px;
+    transform: translate(-50%, 140%);
+    padding: 16px;
+    border: 1px solid #403b58;
+    border-radius: 14px;
+    background: rgba(29, 27, 35, .97);
+    box-shadow: 0 18px 50px rgba(0, 0, 0, .55);
+    transition: transform .3s cubic-bezier(.2, .8, .2, 1);
+}
+
+.guess-card.visible {
+    transform: translate(-50%, 0);
+}
+
+.guess-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.guess-card-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    color: var(--muted);
+}
+
+.guess-location {
+    font-size: 19px;
+    font-weight: 750;
+    margin-top: 3px;
+}
+
+.guess-score {
+    color: var(--accent-bright);
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.guess-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 15px;
+}
+
+.guess-actions button {
+    flex: 1;
+    padding: 10px;
+    border-radius: 9px;
+    font-size: 11px;
+    font-weight: 750;
+}
+
+.cancel-guess {
+    color: #aaa;
+    background: #292929;
+}
+
+.confirm-guess {
+    color: white;
+    background: var(--accent);
+}
+
+.result-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    display: grid;
+    place-items: center;
+    background: rgba(8, 8, 8, .78);
+    backdrop-filter: blur(14px);
     opacity: 0;
-    transform: translateY(5px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    pointer-events: none;
+    transition: opacity .25s;
+    padding: 20px;
 }
 
-@keyframes modalIn {
-  from {
+.result-overlay.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.result-card {
+    width: min(430px, 100%);
+    padding: 28px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background: #1b1b1b;
+    box-shadow: var(--shadow);
+    text-align: center;
+}
+
+.result-icon {
+    width: 58px;
+    height: 58px;
+    margin: 0 auto 17px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: rgba(82, 214, 154, .12);
+    color: var(--green);
+    font-size: 25px;
+}
+
+.result-title {
+    font-size: 25px;
+    letter-spacing: -.04em;
+    margin: 0;
+}
+
+.result-description {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.55;
+    margin: 9px auto 20px;
+    max-width: 320px;
+}
+
+.result-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 18px;
+}
+
+.result-stat {
+    padding: 13px 8px;
+    border-right: 1px solid var(--border);
+}
+
+.result-stat:last-child {
+    border-right: 0;
+}
+
+.result-stat strong {
+    display: block;
+    font-size: 16px;
+}
+
+.result-stat span {
+    color: var(--muted);
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+}
+
+.next-round {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    color: white;
+    background: var(--accent);
+    font-size: 12px;
+    font-weight: 750;
+}
+
+.auth-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    background: rgba(0, 0, 0, .74);
+    backdrop-filter: blur(15px);
     opacity: 0;
-    transform: translateY(12px) scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+    pointer-events: none;
+    transition: opacity .2s;
 }
 
-@media (min-width: 600px) {
-  .app {
-    padding: 30px 24px 40px;
-  }
+.auth-overlay.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
 
-  header {
-    padding-bottom: 42px;
-  }
+.auth-modal {
+    width: min(410px, 100%);
+    padding: 27px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background: #1b1b1b;
+    box-shadow: var(--shadow);
+}
 
-  .subtitle {
-    margin-bottom: 32px;
-  }
+.auth-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.auth-brand {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-weight: 750;
+}
+
+.auth-close {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background: #272727;
+    color: #888;
+}
+
+.auth-title {
+    margin: 25px 0 6px;
+    font-size: 24px;
+    letter-spacing: -.04em;
+}
+
+.auth-subtitle {
+    margin: 0 0 22px;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.auth-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 3px;
+    margin-bottom: 20px;
+    border-radius: 9px;
+    background: #141414;
+}
+
+.auth-tab {
+    padding: 8px;
+    border-radius: 7px;
+    background: transparent;
+    color: #777;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.auth-tab.active {
+    color: white;
+    background: #292929;
+}
+
+.field {
+    display: block;
+    margin-bottom: 13px;
+}
+
+.field span {
+    display: block;
+    color: #999;
+    font-size: 10px;
+    margin-bottom: 6px;
+}
+
+.field input {
+    width: 100%;
+    padding: 11px 12px;
+    border: 1px solid #343434;
+    border-radius: 9px;
+    outline: none;
+    color: white;
+    background: #151515;
+    transition: border-color .2s;
+}
+
+.field input:focus {
+    border-color: var(--accent);
+}
+
+.auth-submit {
+    width: 100%;
+    margin-top: 4px;
+    padding: 12px;
+    border-radius: 9px;
+    color: white;
+    background: var(--accent);
+    font-size: 12px;
+    font-weight: 750;
+}
+
+.auth-divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 19px 0;
+    color: #555;
+    font-size: 9px;
+    text-transform: uppercase;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+    content: "";
+    height: 1px;
+    flex: 1;
+    background: #303030;
+}
+
+.demo-login {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #353535;
+    border-radius: 9px;
+    background: #242424;
+    color: #bbb;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+@media (max-width: 850px) {
+    .topbar {
+        height: 64px;
+        padding: 0 16px;
+    }
+
+    .brand {
+        min-width: auto;
+    }
+
+    .brand-name {
+        font-size: 16px;
+    }
+
+    .match-status {
+        gap: 7px;
+    }
+
+    .elo {
+        display: none;
+    }
+
+    .profile-button {
+        margin-left: 4px;
+    }
+
+    main {
+        padding: 14px;
+    }
+
+    .workspace {
+        grid-template-columns: 1fr;
+        min-height: 0;
+    }
+
+    .challenge-panel {
+        min-height: 470px;
+    }
+
+    .map-panel {
+        min-height: 600px;
+    }
+
+    .map-stage {
+        min-height: 540px;
+    }
+}
+
+@media (max-width: 520px) {
+    .topbar {
+        padding: 0 12px;
+    }
+
+    .tier-badge {
+        padding: 6px 8px;
+    }
+
+    .tier-badge span:last-child {
+        display: none;
+    }
+
+    .match-header {
+        align-items: flex-start;
+    }
+
+    .round-label {
+        display: none;
+    }
+
+    .panel-heading {
+        padding: 17px;
+    }
+
+    .challenge-content {
+        padding: 16px;
+    }
+
+    .map-legend {
+        display: none;
+    }
+
+    .map-toolbar {
+        overflow-x: auto;
+    }
+
+    .map-tool {
+        white-space: nowrap;
+    }
 }
 </style>
 </head>
 <body>
-<main class="app">
-  <header>
-    <div class="logo">LINGOCLUES</div>
-    <div class="streak">
-      <span class="fire">🔥</span>
-      <span id="streakCount">0</span>
+<div class="app-shell">
+    <nav class="topbar">
+        <div class="brand">
+            <div class="brand-mark">L</div>
+            <div class="brand-name">LingoBounds</div>
+        </div>
+
+        <div class="match-status">
+            <div class="tier-badge">
+                <span class="tier-dot"></span>
+                <span id="tierName">Bronze</span>
+            </div>
+            <div class="elo"><strong id="eloValue">1200</strong> ELO</div>
+            <button class="profile-button" id="profileButton" aria-label="Open profile">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+                    <circle cx="12" cy="8" r="3.5"></circle>
+                    <path d="M5.5 20c.7-4 2.8-6 6.5-6s5.8 2 6.5 6"></path>
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <main>
+        <header class="match-header">
+            <div>
+                <div class="eyebrow">Ranked · Language Geography</div>
+                <h1 class="match-title">Identify the language zone</h1>
+            </div>
+            <div class="round-label">Round <strong id="roundNumber">01</strong> / 05</div>
+        </header>
+
+        <section class="workspace">
+            <article class="panel challenge-panel">
+                <div class="panel-heading">
+                    <div>
+                        <h2 class="panel-title">The Challenge</h2>
+                        <div class="panel-subtitle">Listen carefully. Location matters.</div>
+                    </div>
+                    <div class="timer" aria-label="Time remaining">
+                        <svg viewBox="0 0 50 50">
+                            <circle class="timer-track" cx="25" cy="25" r="21"></circle>
+                            <circle class="timer-progress" id="timerProgress" cx="25" cy="25" r="21"></circle>
+                        </svg>
+                        <span class="timer-number" id="timerNumber">30</span>
+                    </div>
+                </div>
+
+                <div class="challenge-content">
+                    <div class="language-prompt">
+                        <div class="prompt-label">Sample transcript</div>
+                        <div class="prompt-text">„Szeretnék egy pohár vizet, kérem.”</div>
+                        <div class="prompt-translation">I would like a glass of water, please.</div>
+                    </div>
+
+                    <div class="audio-player" id="audioPlayer">
+                        <button class="play-button" id="playButton" aria-label="Play sample">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M8 5.3v13.4c0 1 1.1 1.6 2 1l9-6.7a1.2 1.2 0 0 0 0-2l-9-6.7c-.9-.6-2-.1-2 1z"></path>
+                            </svg>
+                        </button>
+                        <div class="audio-info">
+                            <div class="audio-title">Native speaker · 00:08</div>
+                            <div class="audio-wave">
+                                <span></span><span></span><span></span><span></span><span></span>
+                                <span></span><span></span><span></span><span></span><span></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hint-card">
+                        <div class="hint-icon">?</div>
+                        <div>Click the linguistic region you think produced this sample. Your score depends on the accuracy of your guess and the time remaining.</div>
+                    </div>
+
+                    <div class="challenge-footer">
+                        <div class="status-row">
+                            <span>Round confidence</span>
+                            <span id="confidenceValue">Awaiting guess</span>
+                        </div>
+                        <div class="confidence">
+                            <div id="confidenceBar"></div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <article class="panel map-panel">
+                <div class="map-toolbar">
+                    <button class="map-tool active">Language zones</button>
+                    <button class="map-tool">Borders</button>
+                    <button class="map-tool">Terrain</button>
+
+                    <div class="map-legend">
+                        <span class="legend-item"><i class="legend-dot legend-hungarian"></i>Hungarian</span>
+                        <span class="legend-item"><i class="legend-dot legend-slavic"></i>Slavic</span>
+                        <span class="legend-item"><i class="legend-dot legend-germanic"></i>Germanic</span>
+                        <span class="legend-item"><i class="legend-dot legend-romance"></i>Romance</span>
+                    </div>
+                </div>
+
+                <div class="map-stage" id="mapStage">
+                    <div class="map-grid"></div>
+
+                    <svg class="map-svg" id="mapSvg" viewBox="0 0 900 570" preserveAspectRatio="xMidYMid meet" aria-label="Interactive linguistic map of Central Europe">
+                        <path class="country germanic" data-zone="Germanic" data-lat="478" data-lon="160" d="M250 105 L325 92 L354 127 L343 180 L365 212 L328 246 L274 229 L251 190 L227 170 L235 131 Z"></path>
+                        <path class="country germanic" data-zone="Germanic" data-lat="563" data-lon="230" d="M365 212 L413 201 L439 235 L431 283 L389 300 L356 271 L328 246 Z"></path>
+                        <path class="country slavic" data-zone="Slavic" data-lat="455" data-lon="300" d="M274 229 L328 246 L356 271 L343 311 L305 334 L268 310 L251 273 Z"></path>
+                        <path class="country slavic" data-zone="Slavic" data-lat="545" data-lon="320" d="M431 283 L475 272 L505 300 L497 350 L465 376 L417 360 L389 300 Z"></path>
+                        <path class="country slavic" data-zone="Slavic" data-lat="660" data-lon="340" d="M505 300 L562 285 L605 310 L598 359 L562 397 L515 386 L497 350 Z"></path>
+                        <path class="country hungarian" data-zone="Hungarian" data-lat="442" data-lon="394" d="M343 311 L389 300 L417 360 L465 376 L453 419 L409 447 L351 432 L315 394 Z"></path>
+                        <path class="country romance" data-zone="Romance" data-lat="310" data-lon="410" d="M251 273 L305 334 L315 394 L286 437 L237 414 L218 367 L224 317 Z"></path>
+                        <path class="country hungarian" data-zone="Hungarian" data-lat="535" data-lon="433" d="M465 376 L515 386 L548 423 L526 465 L474 482 L430 459 L409 447 L453 419 Z"></path>
+                        <path class="country balkan" data-zone="Balkan" data-lat="590" data-lon="465" d="M548 423 L598 359 L638 381 L652 429 L627 475 L579 491 L526 465 Z"></path>
+                        <path class="country slavic" data-zone="Slavic" data-lat="720" data-lon="410" d="M598 359 L660 340 L718 368 L731 415 L690 444 L652 429 L638 381 Z"></path>
+                        <path class="country neutral" data-zone="Baltic" data-lat="565" data-lon="120" d="M325 92 L392 72 L432 95 L421 134 L365 151 L343 127 Z"></path>
+                        <path class="country neutral" data-zone="Ukraine" data-lat="735" data-lon="240" d="M431 283 L505 300 L562 285 L605 310 L660 340 L598 359 L562 397 L505 386 L497 350 Z"></path>
+
+                        <path class="zone-glow" d="M334 307 L386 292 L421 352 L470 369 L462 421 L410 453 L348 438 L307 397 Z"></path>
+                        <path class="zone-glow" d="M457 371 L519 380 L558 419 L532 472 L474 490 L424 463 L401 447 L448 414 Z"></path>
+
+                        <text class="country-label" x="299" y="169">GERMANY</text>
+                        <text class="country-label" x="393" y="252">CZECHIA</text>
+                        <text class="country-label" x="309" y="294">POLAND</text>
+                        <text class="country-label" x="443" y="337">SLOVAKIA</text>
+                        <text class="country-label" x="551" y="347">UKRAINE</text>
+                        <text class="country-label" x="388" y="378">HUNGARY</text>
+                        <text class="country-label" x="262" y="365">AUSTRIA</text>
+                        <text class="country-label" x="495" y="430">ROMANIA</text>
+                        <text class="country-label" x="588" y="438">SERBIA</text>
+                        <text class="country-label" x="676" y="391">BULGARIA</text>
+                    </svg>
+
+                    <div class="map-footer">Click a region to place your guess · Central Europe</div>
+
+                    <div class="zoom-controls">
+                        <button id="zoomIn" aria-label="Zoom in">+</button>
+                        <button id="zoomOut" aria-label="Zoom out">−</button>
+                    </div>
+
+                    <div class="guess-card" id="guessCard">
+                        <div class="guess-card-header">
+                            <div>
+                                <div class="guess-card-label">Your guess</div>
+                                <div class="guess-location" id="guessLocation">Hungarian Zone</div>
+                            </div>
+                            <div class="guess-score" id="guessAccuracy">94% proximity</div>
+                        </div>
+                        <div class="guess-actions">
+                            <button class="cancel-guess" id="cancelGuess">Change</button>
+                            <button class="confirm-guess" id="confirmGuess">Lock Guess</button>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </section>
+    </main>
+</div>
+
+<div class="result-overlay" id="resultOverlay">
+    <div class="result-card">
+        <div class="result-icon" id="resultIcon">✓</div>
+        <h2 class="result-title" id="resultTitle">Excellent guess</h2>
+        <p class="result-description" id="resultDescription"></p>
+        <div class="result-stats">
+            <div class="result-stat">
+                <strong id="distanceStat">42 km</strong>
+                <span>Distance</span>
+            </div>
+            <div class="result-stat">
+                <strong id="timeStat">18.4s</strong>
+                <span>Time left</span>
+            </div>
+            <div class="result-stat">
+                <strong id="eloStat">+18</strong>
+                <span>ELO</span>
+            </div>
+        </div>
+        <button class="next-round" id="nextRound">Next Round</button>
     </div>
-  </header>
+</div>
 
-  <section class="game">
-    <p class="eyebrow">Daily country</p>
-    <h1>Where in the world?</h1>
-    <p class="subtitle">Five clues. One country. Use as few clues as possible.</p>
+<div class="auth-overlay" id="authOverlay">
+    <div class="auth-modal">
+        <div class="auth-top">
+            <div class="auth-brand">
+                <div class="brand-mark" style="width:30px;height:30px;border-radius:8px;font-size:13px;">L</div>
+                LingoBounds
+            </div>
+            <button class="auth-close" id="authClose">×</button>
+        </div>
 
-    <div class="clues" id="clues"></div>
+        <h2 class="auth-title" id="authTitle">Welcome back</h2>
+        <p class="auth-subtitle" id="authSubtitle">Sign in to preserve your ranking and match history.</p>
 
-    <button class="reveal" id="revealButton" type="button">Reveal Next Clue</button>
+        <div class="auth-tabs">
+            <button class="auth-tab active" id="loginTab">Login</button>
+            <button class="auth-tab" id="signupTab">Create account</button>
+        </div>
 
-    <form class="guess-area" id="guessForm" autocomplete="off">
-      <label for="countryGuess">Your guess</label>
-      <div class="input-row">
-        <input
-          id="countryGuess"
-          name="country"
-          type="text"
-          list="countryNames"
-          placeholder="Type a country..."
-          spellcheck="false"
-          aria-label="Country guess"
-        >
-        <button class="submit" type="submit">Submit</button>
-      </div>
-      <datalist id="countryNames"></datalist>
-      <div class="message" id="message" aria-live="polite"></div>
-    </form>
-  </section>
-</main>
+        <form id="authForm">
+            <label class="field">
+                <span>Email</span>
+                <input type="email" placeholder="you@example.com" required>
+            </label>
+            <label class="field">
+                <span>Password</span>
+                <input type="password" placeholder="••••••••" required>
+            </label>
+            <button class="auth-submit" type="submit" id="authSubmit">Continue</button>
+        </form>
 
-<div class="modal-backdrop" id="successModal">
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="successTitle">
-    <div class="success-mark">✓</div>
-    <h2 id="successTitle">Nice work!</h2>
-    <p class="answer" id="answerText"></p>
-    <p class="score" id="scoreText">5/5</p>
-    <p class="score-label">Daily score</p>
-    <button class="share" id="shareButton" type="button">Share Score</button>
-    <div class="share-status" id="shareStatus"></div>
-  </div>
+        <div class="auth-divider">or</div>
+        <button class="demo-login" id="demoLogin">Continue as demo player</button>
+    </div>
 </div>
 
 <script>
-const countryData = {
-  "2026-08-28": {
-    country: "Finland",
-    clues: [
-      "This country is in Northern Europe.",
-      "It has thousands of lakes and is known for its forests.",
-      "Its capital is Helsinki.",
-      "Finnish and Swedish are its official national languages.",
-      "It shares a long eastern border with Russia."
-    ]
-  },
-  "2026-08-29": {
-    country: "Paraguay",
-    clues: [
-      "This landlocked country is in South America.",
-      "The Paraguay River divides much of the country into two distinct regions.",
-      "Its capital is Asunción.",
-      "Spanish and Guaraní are its official languages.",
-      "It borders Brazil, Bolivia, and Argentina."
-    ]
-  },
-  "2026-08-30": {
-    country: "Japan",
-    clues: [
-      "This country is an island nation in East Asia.",
-      "It is made up of thousands of islands.",
-      "Its capital is Tokyo.",
-      "The Japanese yen is its national currency.",
-      "Mount Fuji is its highest mountain and one of its best-known landmarks."
-    ]
-  }
+const gameState = {
+    elo: 1200,
+    round: 1,
+    totalRounds: 5,
+    secondsRemaining: 30,
+    timerRunning: true,
+    selectedZone: null,
+    confirmed: false,
+    zoomLevel: 1,
+    trueZone: "Hungarian",
+    truePoint: { x: 414, y: 402 },
+    selectedPoint: null,
+    roundStartedAt: Date.now()
 };
 
-const fallbackCountries = [
-  {
-    country: "Finland",
-    clues: countryData["2026-08-28"].clues
-  },
-  {
-    country: "Paraguay",
-    clues: countryData["2026-08-29"].clues
-  },
-  {
-    country: "Japan",
-    clues: countryData["2026-08-30"].clues
-  }
-];
+const timerNumber = document.getElementById("timerNumber");
+const timerProgress = document.getElementById("timerProgress");
+const eloValue = document.getElementById("eloValue");
+const tierName = document.getElementById("tierName");
+const roundNumber = document.getElementById("roundNumber");
+const guessCard = document.getElementById("guessCard");
+const guessLocation = document.getElementById("guessLocation");
+const guessAccuracy = document.getElementById("guessAccuracy");
+const confidenceBar = document.getElementById("confidenceBar");
+const confidenceValue = document.getElementById("confidenceValue");
+const resultOverlay = document.getElementById("resultOverlay");
+const resultTitle = document.getElementById("resultTitle");
+const resultDescription = document.getElementById("resultDescription");
+const resultIcon = document.getElementById("resultIcon");
+const distanceStat = document.getElementById("distanceStat");
+const timeStat = document.getElementById("timeStat");
+const eloStat = document.getElementById("eloStat");
+const mapSvg = document.getElementById("mapSvg");
+const audioPlayer = document.getElementById("audioPlayer");
 
-const validCountries = [
-  "Afghanistan",
-  "Albania",
-  "Algeria",
-  "Andorra",
-  "Angola",
-  "Antigua and Barbuda",
-  "Argentina",
-  "Armenia",
-  "Australia",
-  "Austria",
-  "Azerbaijan",
-  "Bahamas",
-  "Bahrain",
-  "Bangladesh",
-  "Barbados",
-  "Belarus",
-  "Belgium",
-  "Belize",
-  "Benin",
-  "Bhutan",
-  "Bolivia",
-  "Bosnia and Herzegovina",
-  "Botswana",
-  "Brazil",
-  "Brunei",
-  "Bulgaria",
-  "Burkina Faso",
-  "Burundi",
-  "Cabo Verde",
-  "Cambodia",
-  "Cameroon",
-  "Canada",
-  "Central African Republic",
-  "Chad",
-  "Chile",
-  "China",
-  "Colombia",
-  "Comoros",
-  "Congo",
-  "Costa Rica",
-  "Croatia",
-  "Cuba",
-  "Cyprus",
-  "Czechia",
-  "Denmark",
-  "Djibouti",
-  "Dominica",
-  "Dominican Republic",
-  "Ecuador",
-  "Egypt",
-  "El Salvador",
-  "Equatorial Guinea",
-  "Eritrea",
-  "Estonia",
-  "Eswatini",
-  "Ethiopia",
-  "Fiji",
-  "Finland",
-  "France",
-  "Gabon",
-  "Gambia",
-  "Georgia",
-  "Germany",
-  "Ghana",
-  "Greece",
-  "Grenada",
-  "Guatemala",
-  "Guinea",
-  "Guinea-Bissau",
-  "Guyana",
-  "Haiti",
-  "Honduras",
-  "Hungary",
-  "Iceland",
-  "India",
-  "Indonesia",
-  "Iran",
-  "Iraq",
-  "Ireland",
-  "Israel",
-  "Italy",
-  "Jamaica",
-  "Japan",
-  "Jordan",
-  "Kazakhstan",
-  "Kenya",
-  "Kiribati",
-  "Kuwait",
-  "Kyrgyzstan",
-  "Laos",
-  "Latvia",
-  "Lebanon",
-  "Lesotho",
-  "Liberia",
-  "Libya",
-  "Liechtenstein",
-  "Lithuania",
-  "Luxembourg",
-  "Madagascar",
-  "Malawi",
-  "Malaysia",
-  "Maldives",
-  "Mali",
-  "Malta",
-  "Marshall Islands",
-  "Mauritania",
-  "Mauritius",
-  "Mexico",
-  "Micronesia",
-  "Moldova",
-  "Monaco",
-  "Mongolia",
-  "Montenegro",
-  "Morocco",
-  "Mozambique",
-  "Myanmar",
-  "Namibia",
-  "Nauru",
-  "Nepal",
-  "Netherlands",
-  "New Zealand",
-  "Nicaragua",
-  "Niger",
-  "Nigeria",
-  "North Korea",
-  "North Macedonia",
-  "Norway",
-  "Oman",
-  "Pakistan",
-  "Palau",
-  "Palestine",
-  "Panama",
-  "Papua New Guinea",
-  "Paraguay",
-  "Peru",
-  "Philippines",
-  "Poland",
-  "Portugal",
-  "Qatar",
-  "Romania",
-  "Russia",
-  "Rwanda",
-  "Saint Kitts and Nevis",
-  "Saint Lucia",
-  "Saint Vincent and the Grenadines",
-  "Samoa",
-  "San Marino",
-  "São Tomé and Príncipe",
-  "Saudi Arabia",
-  "Senegal",
-  "Serbia",
-  "Seychelles",
-  "Sierra Leone",
-  "Singapore",
-  "Slovakia",
-  "Slovenia",
-  "Solomon Islands",
-  "Somalia",
-  "South Africa",
-  "South Korea",
-  "South Sudan",
-  "Spain",
-  "Sri Lanka",
-  "Sudan",
-  "Suriname",
-  "Sweden",
-  "Switzerland",
-  "Syria",
-  "Taiwan",
-  "Tajikistan",
-  "Tanzania",
-  "Thailand",
-  "Timor-Leste",
-  "Togo",
-  "Tonga",
-  "Trinidad and Tobago",
-  "Tunisia",
-  "Türkiye",
-  "Turkmenistan",
-  "Tuvalu",
-  "Uganda",
-  "Ukraine",
-  "United Arab Emirates",
-  "United Kingdom",
-  "United States",
-  "Uruguay",
-  "Uzbekistan",
-  "Vanuatu",
-  "Vatican City",
-  "Venezuela",
-  "Vietnam",
-  "Yemen",
-  "Zambia",
-  "Zimbabwe"
-];
+const circumference = 2 * Math.PI * 21;
+timerProgress.style.strokeDasharray = circumference;
+timerProgress.style.strokeDashoffset = 0;
 
-const cluesElement = document.getElementById("clues");
-const revealButton = document.getElementById("revealButton");
-const guessForm = document.getElementById("guessForm");
-const guessInput = document.getElementById("countryGuess");
-const messageElement = document.getElementById("message");
-const datalist = document.getElementById("countryNames");
-const streakElement = document.getElementById("streakCount");
-const successModal = document.getElementById("successModal");
-const answerText = document.getElementById("answerText");
-const scoreText = document.getElementById("scoreText");
-const shareButton = document.getElementById("shareButton");
-const shareStatus = document.getElementById("shareStatus");
-
-validCountries.forEach(country => {
-  const option = document.createElement("option");
-  option.value = country;
-  datalist.appendChild(option);
-});
-
-function getLocalDateKey(date = new Date()) {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
+function getTier(elo) {
+    if (elo >= 1500) return { name: "Gold", color: "gold" };
+    if (elo >= 1300) return { name: "Silver", color: "silver" };
+    return { name: "Bronze", color: "bronze" };
 }
 
-function daysSinceEpoch(dateKey) {
-  const parts = dateKey.split("-").map(Number);
-  const date = Date.UTC(parts[0], parts[1] - 1, parts[2]);
-  return Math.floor(date / 86400000);
+function updateRankDisplay() {
+    const tier = getTier(gameState.elo);
+    tierName.textContent = tier.name;
+    tierName.parentElement.style.color = `var(--${tier.color})`;
+    eloValue.textContent = gameState.elo;
 }
 
-function getTodayGame() {
-  const today = getLocalDateKey();
+function updateTimer() {
+    const progress = gameState.secondsRemaining / 30;
+    timerNumber.textContent = gameState.secondsRemaining;
+    timerProgress.style.strokeDashoffset = circumference * (1 - progress);
 
-  if (countryData[today]) {
-    return countryData[today];
-  }
-
-  const index = ((daysSinceEpoch(today) % fallbackCountries.length) + fallbackCountries.length) % fallbackCountries.length;
-  return fallbackCountries[index];
+    if (gameState.secondsRemaining <= 7) {
+        timerProgress.style.stroke = "var(--red)";
+    } else {
+        timerProgress.style.stroke = "var(--accent)";
+    }
 }
 
-function normalizeCountry(value) {
-  return value
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, " ");
+function startTimer() {
+    const timer = setInterval(() => {
+        if (!gameState.timerRunning || gameState.confirmed) return;
+
+        gameState.secondsRemaining -= 1;
+        updateTimer();
+
+        if (gameState.secondsRemaining <= 0) {
+            clearInterval(timer);
+            gameState.timerRunning = false;
+            if (!gameState.confirmed) {
+                showResult(null, true);
+            }
+        }
+    }, 1000);
 }
 
-const game = getTodayGame();
-let visibleClues = 1;
-let finished = false;
+function getSvgPoint(event) {
+    const rect = mapSvg.getBoundingClientRect();
+    const viewBox = mapSvg.viewBox.baseVal;
+    return {
+        x: ((event.clientX - rect.left) / rect.width) * viewBox.width,
+        y: ((event.clientY - rect.top) / rect.height) * viewBox.height
+    };
+}
 
-function renderClues() {
-  cluesElement.innerHTML = "";
-
-  game.clues.forEach((clue, index) => {
-    if (index >= visibleClues) {
-      return;
+function calculateAccuracy(point, zone) {
+    if (zone === gameState.trueZone) {
+        const distance = Math.sqrt(
+            Math.pow(point.x - gameState.truePoint.x, 2) +
+            Math.pow(point.y - gameState.truePoint.y, 2)
+        );
+        return Math.max(72, Math.round(100 - distance * 0.8));
     }
 
-    const clueElement = document.createElement("article");
-    clueElement.className = "clue";
-
-    const numberElement = document.createElement("div");
-    numberElement.className = "clue-number";
-    numberElement.textContent = index + 1;
-
-    const textElement = document.createElement("p");
-    textElement.className = "clue-text";
-    textElement.textContent = clue;
-
-    clueElement.appendChild(numberElement);
-    clueElement.appendChild(textElement);
-    cluesElement.appendChild(clueElement);
-  });
-
-  if (visibleClues >= game.clues.length) {
-    revealButton.textContent = "All Clues Revealed";
-    revealButton.disabled = true;
-    revealButton.style.opacity = "0.45";
-  } else {
-    revealButton.textContent = `Reveal Clue ${visibleClues + 1}`;
-  }
+    return Math.max(3, Math.round(30 - Math.random() * 17));
 }
 
-function getStreakData() {
-  try {
-    return JSON.parse(localStorage.getItem("lingoCluesStreak")) || {
-      count: 0,
-      lastDate: ""
-    };
-  } catch {
-    return {
-      count: 0,
-      lastDate: ""
-    };
-  }
+function selectZone(event) {
+    if (gameState.confirmed || !gameState.timerRunning) return;
+
+    const zone = event.currentTarget.dataset.zone;
+    const point = getSvgPoint(event);
+    const accuracy = calculateAccuracy(point, zone);
+
+    gameState.selectedZone = zone;
+    gameState.selectedPoint = point;
+
+    guessLocation.textContent = `${zone} Zone`;
+    guessAccuracy.textContent = `${accuracy}% proximity`;
+    confidenceBar.style.width = `${accuracy}%`;
+    confidenceValue.textContent = `${accuracy}% estimated accuracy`;
+    guessCard.classList.add("visible");
 }
 
-function updateStreak() {
-  const today = getLocalDateKey();
-  const data = getStreakData();
-  streakElement.textContent = data.count || 0;
+function confirmGuess() {
+    if (!gameState.selectedZone || gameState.confirmed) return;
+
+    gameState.confirmed = true;
+    gameState.timerRunning = false;
+    guessCard.classList.remove("visible");
+
+    const accuracy = calculateAccuracy(gameState.selectedPoint, gameState.selectedZone);
+    const timeBonus = Math.round(gameState.secondsRemaining * 0.35);
+    const isCorrect = gameState.selectedZone === gameState.trueZone;
+    const closenessBonus = Math.round(accuracy * 0.12);
+
+    let eloChange;
+
+    if (isCorrect) {
+        eloChange = Math.max(8, 10 + timeBonus + closenessBonus);
+    } else {
+        eloChange = -Math.max(6, Math.round(17 - accuracy * .08));
+    }
+
+    gameState.elo = Math.max(0, gameState.elo + eloChange);
+
+    const pixelDistance = gameState.selectedPoint
+        ? Math.round(Math.sqrt(
+            Math.pow(gameState.selectedPoint.x - gameState.truePoint.x, 2) +
+            Math.pow(gameState.selectedPoint.y - gameState.truePoint.y, 2)
+        ))
+        : 999;
+
+    resultIcon.textContent = isCorrect ? "✓" : "×";
+    resultIcon.style.background = isCorrect ? "rgba(82, 214, 154, .12)" : "rgba(255, 101, 122, .12)";
+    resultIcon.style.color = isCorrect ? "var(--green)" : "var(--red)";
+    resultTitle.textContent = isCorrect ? "Excellent guess" : "Not quite";
+    resultDescription.textContent = isCorrect
+        ? `You identified the Hungarian linguistic zone with ${accuracy}% proximity. Your speed helped push the rating gain higher.`
+        : `The target was the Hungarian linguistic zone. Your guess landed in the ${gameState.selectedZone} region.`;
+    distanceStat.textContent = `${Math.max(1, pixelDistance)} km`;
+    timeStat.textContent = `${(gameState.secondsRemaining + .4).toFixed(1)}s`;
+    eloStat.textContent = `${eloChange >= 0 ? "+" : ""}${eloChange}`;
+
+    updateRankDisplay();
+    resultOverlay.classList.add("visible");
 }
 
-function recordWin() {
-  const today = getLocalDateKey();
-  const data = getStreakData();
+function showResult(zone, timedOut) {
+    gameState.confirmed = true;
+    gameState.timerRunning = false;
 
-  if (data.lastDate === today) {
-    return data.count;
-  }
+    const eloChange = -18;
+    gameState.elo = Math.max(0, gameState.elo + eloChange);
 
-  const previous = new Date();
-  previous.setDate(previous.getDate() - 1);
-  const yesterday = getLocalDateKey(previous);
+    resultIcon.textContent = "×";
+    resultIcon.style.background = "rgba(255, 101, 122, .12)";
+    resultIcon.style.color = "var(--red)";
+    resultTitle.textContent = "Time's up";
+    resultDescription.textContent = "The Hungarian linguistic zone was the target. Faster decisions earn stronger ranked gains.";
+    distanceStat.textContent = "—";
+    timeStat.textContent = "0.0s";
+    eloStat.textContent = "-18";
 
-  const nextCount = data.lastDate === yesterday ? (data.count || 0) + 1 : 1;
-
-  localStorage.setItem("lingoCluesStreak", JSON.stringify({
-    count: nextCount,
-    lastDate: today
-  }));
-
-  streakElement.textContent = nextCount;
-  return nextCount;
+    updateRankDisplay();
+    resultOverlay.classList.add("visible");
 }
 
-function alreadyPlayedToday() {
-  try {
-    const saved = JSON.parse(localStorage.getItem("lingoCluesPlayed"));
-    return saved && saved.date === getLocalDateKey();
-  } catch {
-    return false;
-  }
+function nextRound() {
+    if (gameState.round >= gameState.totalRounds) {
+        gameState.round = 1;
+        gameState.elo = 1200;
+    } else {
+        gameState.round += 1;
+    }
+
+    gameState.secondsRemaining = 30;
+    gameState.timerRunning = true;
+    gameState.confirmed = false;
+    gameState.selectedZone = null;
+    gameState.selectedPoint = null;
+    gameState.roundStartedAt = Date.now();
+
+    roundNumber.textContent = String(gameState.round).padStart(2, "0");
+    resultOverlay.classList.remove("visible");
+    guessCard.classList.remove("visible");
+    confidenceBar.style.width = "0";
+    confidenceValue.textContent = "Awaiting guess";
+    updateTimer();
 }
 
-function saveTodayResult(score) {
-  localStorage.setItem("lingoCluesPlayed", JSON.stringify({
-    date: getLocalDateKey(),
-    score
-  }));
-}
-
-function openSuccess(score) {
-  finished = true;
-  saveTodayResult(score);
-  recordWin();
-
-  answerText.textContent = `The secret country was ${game.country}.`;
-  scoreText.textContent = `${score}/5`;
-  successModal.classList.add("open");
-  shareStatus.textContent = "";
-  guessInput.blur();
-}
-
-function getShareGrid(score) {
-  return Array.from({ length: 5 }, (_, index) =>
-    index < 6 - score ? "🟩" : "⬜"
-  ).join("");
-}
-
-function getShareText(score) {
-  return `LingoClues ${getLocalDateKey()}\n${getShareGrid(score)} ${score}/5`;
-}
-
-revealButton.addEventListener("click", () => {
-  if (finished || visibleClues >= game.clues.length) {
-    return;
-  }
-
-  visibleClues += 1;
-  renderClues();
+document.querySelectorAll(".country").forEach(country => {
+    country.addEventListener("click", selectZone);
 });
 
-guessForm.addEventListener("submit", event => {
-  event.preventDefault();
+document.getElementById("confirmGuess").addEventListener("click", confirmGuess);
 
-  if (finished) {
-    return;
-  }
-
-  const guess = normalizeCountry(guessInput.value);
-  const answer = normalizeCountry(game.country);
-
-  if (!guess) {
-    messageElement.textContent = "Enter a country to submit your guess.";
-    guessInput.focus();
-    return;
-  }
-
-  if (!validCountries.some(country => normalizeCountry(country) === guess)) {
-    messageElement.textContent = "Choose a country from the suggestions.";
-    guessInput.focus();
-    return;
-  }
-
-  if (guess === answer) {
-    const score = 6 - visibleClues;
-    openSuccess(score);
-    return;
-  }
-
-  messageElement.textContent = "Not quite. Try another country or reveal another clue.";
-  guessInput.select();
+document.getElementById("cancelGuess").addEventListener("click", () => {
+    gameState.selectedZone = null;
+    gameState.selectedPoint = null;
+    guessCard.classList.remove("visible");
+    confidenceBar.style.width = "0";
+    confidenceValue.textContent = "Awaiting guess";
 });
 
-shareButton.addEventListener("click", async () => {
-  const score = Number(scoreText.textContent.split("/")[0]);
-  const shareText = getShareText(score);
+document.getElementById("nextRound").addEventListener("click", nextRound);
 
-  try {
-    await navigator.clipboard.writeText(shareText);
-    shareStatus.textContent = "Score copied!";
-  } catch {
-    const temporary = document.createElement("textarea");
-    temporary.value = shareText;
-    temporary.style.position = "fixed";
-    temporary.style.opacity = "0";
-    document.body.appendChild(temporary);
-    temporary.select();
-    document.execCommand("copy");
-    temporary.remove();
-    shareStatus.textContent = "Score copied!";
-  }
+document.getElementById("playButton").addEventListener("click", () => {
+    audioPlayer.classList.toggle("playing");
 });
 
-if (alreadyPlayedToday()) {
-  const saved = JSON.parse(localStorage.getItem("lingoCluesPlayed"));
-  finished = true;
-  visibleClues = 5;
-  renderClues();
-  revealButton.textContent = "Today's Puzzle Complete";
-  revealButton.disabled = true;
-  revealButton.style.opacity = "0.45";
-  messageElement.textContent = `Today's puzzle is complete. Your score was ${saved.score}/5.`;
-} else {
-  renderClues();
+document.querySelectorAll(".map-tool").forEach(tool => {
+    tool.addEventListener("click", () => {
+        document.querySelectorAll(".map-tool").forEach(item => item.classList.remove("active"));
+        tool.classList.add("active");
+    });
+});
+
+function setZoom(delta) {
+    gameState.zoomLevel = Math.min(1.45, Math.max(.85, gameState.zoomLevel + delta));
+    const scale = gameState.zoomLevel;
+    mapSvg.style.transform = `scale(${scale})`;
 }
 
-updateStreak();
+document.getElementById("zoomIn").addEventListener("click", () => setZoom(.1));
+document.getElementById("zoomOut").addEventListener("click", () => setZoom(-.1));
+
+const authOverlay = document.getElementById("authOverlay");
+const loginTab = document.getElementById("loginTab");
+const signupTab = document.getElementById("signupTab");
+const authTitle = document.getElementById("authTitle");
+const authSubtitle = document.getElementById("authSubtitle");
+const authSubmit = document.getElementById("authSubmit");
+
+document.getElementById("profileButton").addEventListener("click", () => {
+    authOverlay.classList.add("visible");
+});
+
+document.getElementById("authClose").addEventListener("click", () => {
+    authOverlay.classList.remove("visible");
+});
+
+function setAuthMode(mode) {
+    const signup = mode === "signup";
+
+    loginTab.classList.toggle("active", !signup);
+    signupTab.classList.toggle("active", signup);
+    authTitle.textContent = signup ? "Create your account" : "Welcome back";
+    authSubtitle.textContent = signup
+        ? "Track your ELO, match history, and language accuracy."
+        : "Sign in to preserve your ranking and match history.";
+    authSubmit.textContent = signup ? "Create account" : "Continue";
+}
+
+loginTab.addEventListener("click", () => setAuthMode("login"));
+signupTab.addEventListener("click", () => setAuthMode("signup"));
+
+document.getElementById("demoLogin").addEventListener("click", () => {
+    authOverlay.classList.remove("visible");
+});
+
+document.getElementById("authForm").addEventListener("submit", event => {
+    event.preventDefault();
+    authOverlay.classList.remove("visible");
+});
+
+authOverlay.addEventListener("click", event => {
+    if (event.target === authOverlay) {
+        authOverlay.classList.remove("visible");
+    }
+});
+
+updateRankDisplay();
+updateTimer();
+startTimer();
 </script>
 </body>
 </html>
