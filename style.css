@@ -318,43 +318,6 @@ button#submit-btn:hover {
   background: var(--primary-hover); 
 }
 
-/* History Card */
-.history-card { 
-  margin-top: 1.5rem; 
-}
-
-.history-card h3 { 
-  margin-top: 0; 
-  font-size: 1rem; 
-  color: var(--text-muted); 
-}
-
-.history-list { 
-  list-style: none; 
-  padding: 0; 
-  margin: 0; 
-}
-
-.history-item { 
-  display: flex; 
-  justify-content: space-between; 
-  padding: 0.75rem 0; 
-  border-bottom: 1px solid var(--border-color); 
-  font-size: 0.95rem; 
-}
-
-.history-item:last-child { 
-  border-bottom: none; 
-}
-
-.empty-state { 
-  color: var(--text-muted); 
-  font-size: 0.9rem; 
-  font-style: italic; 
-  text-align: center; 
-  padding: 0.5rem 0; 
-}
-
 /* About View */
 .divider { 
   border: none; 
