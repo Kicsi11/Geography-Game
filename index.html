@@ -50,7 +50,8 @@
             letter-spacing: 0.5px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.5);
         }
-        #input-wrapper {
+        #input-container {
+            position: relative;
             display: flex;
             flex-direction: column;
             gap: 12px;
@@ -71,6 +72,32 @@
         input:focus {
             border-color: #4a4a4a;
         }
+        #suggestions-box {
+            position: absolute;
+            top: 58px;
+            left: 0;
+            width: 100%;
+            background-color: #1a1a1a;
+            border: 2px solid #2a2a2a;
+            border-radius: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 10;
+            display: none;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.6);
+        }
+        .suggestion-item {
+            padding: 14px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #222222;
+            font-size: 1.05rem;
+        }
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+        .suggestion-item:hover {
+            background-color: #2a2a2a;
+        }
         button {
             width: 100%;
             height: 54px;
@@ -82,6 +109,7 @@
             font-weight: 700;
             cursor: pointer;
             transition: opacity 0.2s;
+            margin-top: 5px;
         }
         button:active {
             opacity: 0.9;
@@ -95,30 +123,65 @@
     <div id="game-container">
         <div id="sentence-card">"Akkor döntsd el, hogy mit szeretnél csinálni."</div>
         
-        <div id="input-wrapper">
-            <input type="text" id="guess-input" list="languages-list" placeholder="Type a language...">
-            <datalist id="languages-list">
-                <option value="Romani">
-                <option value="Romanian">
-                <option value="Romansh">
-                <option value="Hungarian">
-                <option value="Finnish">
-                <option value="Basque">
-            </datalist>
+        <div id="input-container">
+            <input type="text" id="guess-input" placeholder="Type a language..." autocomplete="off">
+            <div id="suggestions-box"></div>
             <button id="submit-btn">SUBMIT GUESS</button>
         </div>
     </div>
 
     <script>
-        const submitBtn = document.getElementById('submit-btn');
+        const languages = ["Basque", "Finnish", "Hungarian", "Romani", "Romanian", "Romansh"];
+        const correctAnswer = "Hungarian";
+
         const guessInput = document.getElementById('guess-input');
+        const suggestionsBox = document.getElementById('suggestions-box');
+        const submitBtn = document.getElementById('submit-btn');
+
+        guessInput.addEventListener('input', () => {
+            const query = guessInput.value.toLowerCase().trim();
+            suggestionsBox.innerHTML = '';
+            
+            if (!query) {
+                suggestionsBox.style.display = 'none';
+                return;
+            }
+
+            const filtered = languages.filter(lang => lang.toLowerCase().startsWith(query));
+
+            if (filtered.length > 0) {
+                filtered.forEach(lang => {
+                    const item = document.createElement('div');
+                    item.className = 'suggestion-item';
+                    item.textContent = lang;
+                    item.addEventListener('click', () => {
+                        guessInput.value = lang;
+                        suggestionsBox.style.display = 'none';
+                    });
+                    suggestionsBox.appendChild(item);
+                });
+                suggestionsBox.style.display = 'block';
+            } else {
+                suggestionsBox.style.display = 'none';
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (e.target !== guessInput) {
+                suggestionsBox.style.display = 'none';
+            }
+        });
 
         submitBtn.addEventListener('click', () => {
-            const currentGuess = guessInput.value.trim();
-            if (currentGuess) {
-                alert('You guessed: ' + currentGuess);
-                guessInput.value = '';
+            const userGuess = guessInput.value.trim();
+            if (!userGuess) return;
+
+            if (userGuess.toLowerCase() === correctAnswer.toLowerCase()) {
+                alert('🎉 Correct! That is Hungarian.');
+            } else {
+                alert('❌ Wrong answer! Try again.');
             }
+            guessInput.value = '';
         });
     </script>
 
