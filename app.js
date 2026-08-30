@@ -196,12 +196,13 @@ closeModalBtn.addEventListener("click", () => {
   statsModal.classList.add("hidden");
 });
 
-// Navigation & About Page Handling from Settings
+// Navigate to About & Legal Page from inside Settings
 modalAboutBtn.addEventListener("click", () => {
   statsModal.classList.add("hidden");
   showView("about-view");
 });
 
+// Navigate Back to Main Game View
 backToGameBtn.addEventListener("click", () => {
   showView("game-view");
 });
