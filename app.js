@@ -1,4 +1,3 @@
-// Master list of available languages for search autocomplete
 const allLanguages = [
   "Afrikaans", "Albanian", "Arabic", "Armenian", "Azerbaijani", "Basque", "Belarusian", 
   "Bengali", "Bosnian", "Bulgarian", "Catalan", "Chinese", "Croatian", "Czech", 
@@ -11,7 +10,6 @@ const allLanguages = [
   "Turkish", "Ukrainian", "Urdu", "Vietnamese", "Welsh"
 ];
 
-// Sample dataset of rounds
 const database = [
   { text: "Acesta este un test în limba română.", language: "Romanian" },
   { text: "Cai si si ek testo andi Romani chib.", language: "Romani" },
@@ -19,14 +17,15 @@ const database = [
   { text: "El rápido zorro marrón salta sobre el perro perezoso.", language: "Spanish" },
   { text: "Le rapide renard brun saute par-dessus le chien paresseux.", language: "French" },
   { text: "Der schnelle braune Fuchs springt über den faulen Hund.", language: "German" },
-  { text: "素早い茶色のキツネがのろまな犬を飛び越えます。", language: "Japanese" }
+  { text: "素早い茶色のキツネがのろまな犬を飛び越えます。", language: "Japanese" },
+  { text: "빠른 갈색 여우가 게으른 개를 뛰어넘습니다.", language: "Korean" },
+  { text: "Быстрая коричневая лиса прыгает через ленивую собаку.", language: "Russian" }
 ];
 
-// State
 let currentRound = null;
 let streak = 0;
 let bestStreak = parseInt(localStorage.getItem("glotle_best")) || 0;
-let isHardMode = false;
+let selectedSuggestionIndex = -1;
 
 // Elements
 const sentenceEl = document.getElementById("sentence-prompt");
@@ -38,73 +37,112 @@ const streakEl = document.getElementById("streak-count");
 const bestStreakEl = document.getElementById("best-streak");
 const flashOverlay = document.getElementById("flash-overlay");
 const historyList = document.getElementById("history-list");
+const themeToggleBtn = document.getElementById("theme-toggle");
 
-// Init
-bestStreakEl.textContent = bestStreak;
+// Initialize Game
+bestStreakEl.innerHTML = `${bestStreak} <span class="trophy-icon">🏆</span>`;
 loadNextRound();
 
-// Autocomplete logic
+// Autocomplete Input Handling
 inputEl.addEventListener("input", () => {
   const query = inputEl.value.trim().toLowerCase();
   suggestionsEl.innerHTML = "";
+  selectedSuggestionIndex = -1;
   
-  if (!query || isHardMode) return;
+  if (!query) return;
 
   const matches = allLanguages.filter(lang => lang.toLowerCase().startsWith(query));
-  matches.forEach(match => {
+  matches.forEach((match, index) => {
     const li = document.createElement("li");
     li.textContent = match;
+    li.dataset.index = index;
     li.addEventListener("click", () => {
       inputEl.value = match;
       suggestionsEl.innerHTML = "";
+      makeGuess();
     });
     suggestionsEl.appendChild(li);
   });
 });
+
+// Keyboard Navigation for Autocomplete
+inputEl.addEventListener("keydown", (e) => {
+  const items = suggestionsEl.querySelectorAll("li");
+  
+  if (e.key === "ArrowDown") {
+    e.preventDefault();
+    if (items.length > 0) {
+      selectedSuggestionIndex = (selectedSuggestionIndex + 1) % items.length;
+      updateSuggestionSelection(items);
+    }
+  } else if (e.key === "ArrowUp") {
+    e.preventDefault();
+    if (items.length > 0) {
+      selectedSuggestionIndex = (selectedSuggestionIndex - 1 + items.length) % items.length;
+      updateSuggestionSelection(items);
+    }
+  } else if (e.key === "Enter") {
+    e.preventDefault();
+    if (selectedSuggestionIndex >= 0 && items[selectedSuggestionIndex]) {
+      inputEl.value = items[selectedSuggestionIndex].textContent;
+      suggestionsEl.innerHTML = "";
+    }
+    makeGuess();
+  }
+});
+
+function updateSuggestionSelection(items) {
+  items.forEach((item, index) => {
+    if (index === selectedSuggestionIndex) {
+      item.classList.add("selected");
+      item.scrollIntoView({ block: "nearest" });
+    } else {
+      item.classList.remove("selected");
+    }
+  });
+}
 
 // Close autocomplete when clicking outside
 document.addEventListener("click", (e) => {
   if (e.target !== inputEl) suggestionsEl.innerHTML = "";
 });
 
-// Handle guess
+// Handle Guesses
 function makeGuess() {
   const userGuess = inputEl.value.trim();
   if (!userGuess) return;
 
+  const emptyState = historyList.querySelector(".empty-state");
+  if (emptyState) emptyState.remove();
+
   if (userGuess.toLowerCase() === currentRound.language.toLowerCase()) {
-    // Correct Answer
     triggerFlash("correct-flash");
     streak++;
     if (streak > bestStreak) {
       bestStreak = streak;
       localStorage.setItem("glotle_best", bestStreak);
-      bestStreakEl.textContent = bestStreak;
+      bestStreakEl.innerHTML = `${bestStreak} <span class="trophy-icon">🏆</span>`;
     }
-    feedbackEl.style.color = "#27ae60";
+    feedbackEl.style.color = "var(--accent-green)";
     feedbackEl.textContent = "Correct!";
     
-    setTimeout(() => {
-      loadNextRound();
-    }, 600); // Quick transition for continuous play
+    setTimeout(loadNextRound, 400);
 
   } else {
-    // Incorrect Answer
     triggerFlash("wrong-flash");
     streak = 0;
-    feedbackEl.style.color = "#e74c3c";
+    feedbackEl.style.color = "var(--accent-red)";
     feedbackEl.textContent = `Wrong! That was ${currentRound.language}.`;
     
-    const li = document.createElement("li");
-    li.textContent = `❌ ${userGuess} (Answer: ${currentRound.language})`;
-    historyList.prepend(li);
+    const historyItem = document.createElement("li");
+    historyItem.className = "history-item";
+    historyItem.innerHTML = `<span>❌ ${userGuess}</span> <span>Answer: <strong>${currentRound.language}</strong></span>`;
+    historyList.prepend(historyItem);
     
-    setTimeout(() => {
-      loadNextRound();
-    }, 1200);
+    setTimeout(loadNextRound, 1000);
   }
 
-  streakEl.textContent = streak;
+  streakEl.innerHTML = `${streak} <span class="fire-icon">🔥</span>`;
   inputEl.value = "";
   suggestionsEl.innerHTML = "";
 }
@@ -122,11 +160,8 @@ function triggerFlash(className) {
 }
 
 submitBtn.addEventListener("click", makeGuess);
-inputEl.addEventListener("keypress", (e) => {
-  if (e.key === "Enter") makeGuess();
-});
 
-// Navigation Views
+// View Switching
 document.getElementById("nav-game-btn").addEventListener("click", (e) => {
   showView("game-view");
   setActiveNav(e.target);
@@ -142,19 +177,13 @@ function showView(viewId) {
 }
 
 function setActiveNav(btn) {
-  document.querySelectorAll("nav button").forEach(b => b.classList.remove("active-nav"));
-  btn.classList.add("active-nav");
+  document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
 }
 
-// Settings Modal
-const modal = document.getElementById("settings-modal");
-document.getElementById("settings-btn").addEventListener("click", () => modal.classList.remove("hidden"));
-document.getElementById("close-modal").addEventListener("click", () => modal.classList.add("hidden"));
-
-document.getElementById("dark-mode").addEventListener("change", (e) => {
-  document.body.classList.toggle("dark-theme", e.target.checked);
-});
-
-document.getElementById("hard-mode").addEventListener("change", (e) => {
-  isHardMode = e.target.checked;
+// Dark Mode Toggle
+themeToggleBtn.addEventListener("click", () => {
+  document.body.classList.toggle("dark-theme");
+  const isDark = document.body.classList.contains("dark-theme");
+  themeToggleBtn.textContent = isDark ? "☀️" : "🌙";
 });
