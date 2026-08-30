@@ -204,6 +204,27 @@ main {
   background: var(--border-color); 
 }
 
+.share-btn {
+  background: var(--primary);
+  color: white;
+  border: none;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.1s ease, background-color 0.2s;
+}
+
+.share-btn:hover {
+  background: var(--primary-hover);
+  transform: scale(1.03);
+}
+
+.share-btn:active {
+  transform: scale(0.97);
+}
+
 /* Game Card */
 .game-card { 
   text-align: center; 
