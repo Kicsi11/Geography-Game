@@ -22,23 +22,15 @@ const database = [
   { text: "Быстрая коричневая лиса прыгает через ленивую собаку.", language: "Russian" }
 ];
 
-let gameMode = "endless"; // "endless" or "daily"
 let currentRound = null;
 let streak = 0;
 let bestStreak = parseInt(localStorage.getItem("glotle_best")) || 0;
 let selectedSuggestionIndex = -1;
 
-// Daily Challenge State
-let dailyRoundIndex = 0;
-let dailyScore = 0;
-const todayKey = new Date().toISOString().slice(0, 10);
-let dailyCompleted = localStorage.getItem(`glotle_daily_${todayKey}`) === "true";
-
-// Stats Tracking
+// Stats Object (Guesses, Accuracy Tracking, Best Streak)
 let userStats = JSON.parse(localStorage.getItem("glotle_user_stats")) || {
-  played: 0,
-  wins: 0,
-  currStreak: 0,
+  guesses: 0,
+  correctGuesses: 0,
   bestStreak: 0
 };
 
@@ -53,10 +45,8 @@ const bestStreakEl = document.getElementById("best-streak");
 const flashOverlay = document.getElementById("flash-overlay");
 const themeToggleBtn = document.getElementById("theme-toggle");
 const shareBtn = document.getElementById("share-btn");
-const roundBadge = document.getElementById("round-badge");
-const modeLabel = document.getElementById("mode-label");
 
-// Stats Modal Elements
+// Modal Elements
 const statsModalBtn = document.getElementById("stats-modal-btn");
 const statsModal = document.getElementById("stats-modal");
 const closeModalBtn = document.getElementById("close-modal-btn");
@@ -89,7 +79,7 @@ inputEl.addEventListener("input", () => {
   });
 });
 
-// Keyboard Navigation
+// Keyboard Navigation for Autocomplete
 inputEl.addEventListener("keydown", (e) => {
   const items = suggestionsEl.querySelectorAll("li");
   
@@ -135,29 +125,25 @@ function makeGuess() {
   const userGuess = inputEl.value.trim();
   if (!userGuess) return;
 
-  userStats.played++;
+  userStats.guesses++;
 
   if (userGuess.toLowerCase() === currentRound.language.toLowerCase()) {
     triggerFlash("correct-flash");
-    userStats.wins++;
-    userStats.currStreak++;
+    streak++;
+    userStats.correctGuesses++;
 
-    if (gameMode === "endless") {
-      streak++;
-      if (streak % 5 === 0 && typeof confetti === "function") {
-        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-      }
-      if (streak > bestStreak) {
-        bestStreak = streak;
-        localStorage.setItem("glotle_best", bestStreak);
-        bestStreakEl.innerHTML = `${bestStreak} <span class="trophy-icon">🏆</span>`;
-      }
-    } else {
-      dailyScore++;
+    if (streak % 5 === 0 && typeof confetti === "function") {
+      confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
     }
 
-    if (userStats.currStreak > userStats.bestStreak) {
-      userStats.bestStreak = userStats.currStreak;
+    if (streak > bestStreak) {
+      bestStreak = streak;
+      localStorage.setItem("glotle_best", bestStreak);
+      bestStreakEl.innerHTML = `${bestStreak} <span class="trophy-icon">🏆</span>`;
+    }
+
+    if (streak > userStats.bestStreak) {
+      userStats.bestStreak = streak;
     }
 
     feedbackEl.style.color = "var(--accent-green)";
@@ -166,61 +152,21 @@ function makeGuess() {
 
   } else {
     triggerFlash("wrong-flash");
-    userStats.currStreak = 0;
-
-    if (gameMode === "endless") {
-      streak = 0;
-    }
-
+    streak = 0;
     feedbackEl.style.color = "var(--accent-red)";
     feedbackEl.textContent = `Wrong! That was ${currentRound.language}.`;
     setTimeout(loadNextRound, 1000);
   }
 
   saveStats();
-  if (gameMode === "endless") {
-    streakEl.innerHTML = `${streak} <span class="fire-icon">🔥</span>`;
-  }
+  streakEl.innerHTML = `${streak} <span class="fire-icon">🔥</span>`;
   inputEl.value = "";
   suggestionsEl.innerHTML = "";
 }
 
 function loadNextRound() {
-  if (gameMode === "daily") {
-    if (dailyCompleted) {
-      sentenceEl.textContent = "You completed today's Daily Challenge! Come back tomorrow.";
-      inputEl.disabled = true;
-      submitBtn.disabled = true;
-      roundBadge.textContent = "Daily Finished";
-      return;
-    }
-
-    if (dailyRoundIndex >= 5) {
-      dailyCompleted = true;
-      localStorage.setItem(`glotle_daily_${todayKey}`, "true");
-      sentenceEl.textContent = `Daily Challenge Complete! Your Score: ${dailyScore}/5`;
-      inputEl.disabled = true;
-      submitBtn.disabled = true;
-      roundBadge.textContent = "Daily Complete 🎉";
-      
-      if (typeof confetti === "function") {
-        confetti({ particleCount: 150, spread: 90, origin: { y: 0.5 } });
-      }
-      return;
-    }
-
-    // Daily Deterministic Order
-    currentRound = database[dailyRoundIndex % database.length];
-    roundBadge.textContent = `Daily Challenge (${dailyRoundIndex + 1}/5)`;
-    dailyRoundIndex++;
-  } else {
-    inputEl.disabled = false;
-    submitBtn.disabled = false;
-    roundBadge.textContent = "Endless Language Challenge";
-    const randomIndex = Math.floor(Math.random() * database.length);
-    currentRound = database[randomIndex];
-  }
-
+  const randomIndex = Math.floor(Math.random() * database.length);
+  currentRound = database[randomIndex];
   sentenceEl.textContent = `"${currentRound.text}"`;
   feedbackEl.textContent = "";
 }
@@ -234,13 +180,12 @@ function saveStats() {
   localStorage.setItem("glotle_user_stats", JSON.stringify(userStats));
 }
 
-// Modal View Controls
+// Modal View Controls & Updates
 statsModalBtn.addEventListener("click", () => {
-  document.getElementById("stat-played").textContent = userStats.played;
-  const winPercent = userStats.played > 0 ? Math.round((userStats.wins / userStats.played) * 100) : 0;
-  document.getElementById("stat-winrate").textContent = `${winPercent}%`;
-  document.getElementById("stat-curr-streak").textContent = userStats.currStreak;
-  document.getElementById("stat-best-streak").textContent = userStats.bestStreak;
+  document.getElementById("stat-guesses").textContent = userStats.guesses;
+  const accuracy = userStats.guesses > 0 ? Math.round((userStats.correctGuesses / userStats.guesses) * 100) : 0;
+  document.getElementById("stat-accuracy").textContent = `${accuracy}%`;
+  document.getElementById("stat-best-streak").textContent = bestStreak;
   
   statsModal.classList.remove("hidden");
 });
@@ -252,13 +197,7 @@ closeModalBtn.addEventListener("click", () => {
 // Share Button
 shareBtn.addEventListener("click", () => {
   const gameUrl = "https://kicsi11.github.io/Geography-Game/";
-  let shareText = "";
-
-  if (gameMode === "daily") {
-    shareText = `🌐 Glotle Daily Challenge (${todayKey})\nScore: ${dailyScore}/5 🎯\nPlay here: ${gameUrl}`;
-  } else {
-    shareText = `🌐 Glotle Score\nStreak: ${streak} 🔥\nBest Streak: ${bestStreak} 🏆\nPlay here: ${gameUrl}`;
-  }
+  const shareText = `🌐 Glotle Score\nStreak: ${streak} 🔥\nBest Streak: ${bestStreak} 🏆\nPlay here: ${gameUrl}`;
 
   if (navigator.clipboard && window.isSecureContext) {
     navigator.clipboard.writeText(shareText).then(() => {
@@ -277,25 +216,10 @@ shareBtn.addEventListener("click", () => {
 
 submitBtn.addEventListener("click", makeGuess);
 
-// Nav & Mode Switching
+// View Switching
 document.getElementById("nav-game-btn").addEventListener("click", (e) => {
-  gameMode = "endless";
-  modeLabel.textContent = "Endless Streak";
-  streakEl.innerHTML = `${streak} <span class="fire-icon">🔥</span>`;
   showView("game-view");
   setActiveNav(e.target);
-  loadNextRound();
-});
-
-document.getElementById("nav-daily-btn").addEventListener("click", (e) => {
-  gameMode = "daily";
-  dailyRoundIndex = 0;
-  dailyScore = 0;
-  modeLabel.textContent = "Daily Progress";
-  streakEl.innerHTML = `${dailyScore}/5 🎯`;
-  showView("game-view");
-  setActiveNav(e.target);
-  loadNextRound();
 });
 
 document.getElementById("nav-about-btn").addEventListener("click", (e) => {
@@ -313,9 +237,9 @@ function setActiveNav(btn) {
   btn.classList.add("active");
 }
 
-// Dark Mode Toggle
+// Dark Mode Toggle inside Modal Settings
 themeToggleBtn.addEventListener("click", () => {
   document.body.classList.toggle("dark-theme");
   const isDark = document.body.classList.contains("dark-theme");
-  themeToggleBtn.textContent = isDark ? "☀️" : "🌙";
+  themeToggleBtn.textContent = isDark ? "☀️ Light Mode" : "🌙 Dark Mode";
 });
