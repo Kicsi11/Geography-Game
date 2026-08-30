@@ -4,77 +4,102 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Glotle - Guess the Language</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div id="flash-overlay"></div>
 
   <header>
-    <h1>Glotle</h1>
-    <nav>
-      <button id="nav-game-btn" class="active-nav">Game</button>
-      <button id="nav-about-btn">About & Legal</button>
-      <button id="settings-btn">⚙️</button>
-    </nav>
+    <div class="header-container">
+      <div class="logo">
+        <span class="logo-icon">🌐</span>
+        <h1>Glotle</h1>
+      </div>
+      <nav>
+        <button id="nav-game-btn" class="nav-btn active">Play</button>
+        <button id="nav-about-btn" class="nav-btn">About & Legal</button>
+        <button id="theme-toggle" class="icon-btn" title="Toggle Theme">🌙</button>
+      </nav>
+    </div>
   </header>
 
+  <!-- Top Ad Banner Placeholder for Google AdSense -->
+  <div class="ad-container top-ad">
+    <div class="ad-placeholder">Advertisement Space</div>
+  </div>
+
   <main>
+    <!-- Main Game View -->
     <section id="game-view" class="view">
-      <div class="stats-bar">
-        <span>Streak: <strong id="streak-count">0</strong> 🔥</span>
-        <span>Best: <strong id="best-streak">0</strong> 🏆</span>
-      </div>
-
-      <div class="prompt-box">
-        <div class="prompt-label">Guess the language of this sentence:</div>
-        <blockquote id="sentence-prompt">Loading sentence...</blockquote>
-        <audio id="audio-player" controls style="display: none;"></audio>
-      </div>
-
-      <div class="guess-container">
-        <div class="autocomplete-wrapper">
-          <input type="text" id="language-input" placeholder="Type a language (e.g., Romanian)..." autocomplete="off">
-          <ul id="suggestions-list" class="suggestions-list"></ul>
+      <div class="stats-card">
+        <div class="stat-item">
+          <span class="stat-label">Current Streak</span>
+          <span class="stat-value" id="streak-count">0 <span class="fire-icon">🔥</span></span>
         </div>
-        <button id="submit-btn">Guess</button>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-label">Best Streak</span>
+          <span class="stat-value" id="best-streak">0 <span class="trophy-icon">🏆</span></span>
+        </div>
       </div>
 
-      <div id="feedback-msg"></div>
+      <div class="card game-card">
+        <div class="card-header">
+          <span class="badge">Round Language Challenge</span>
+        </div>
+        <blockquote id="sentence-prompt">"Loading sentence..."</blockquote>
+        
+        <div class="guess-form">
+          <div class="autocomplete-wrapper">
+            <input type="text" id="language-input" placeholder="Type a language (e.g. Romanian, Romani)..." autocomplete="off">
+            <ul id="suggestions-list" class="suggestions-list"></ul>
+          </div>
+          <button id="submit-btn">Guess ➔</button>
+        </div>
 
-      <div class="guess-history">
-        <h3>Previous Guesses</h3>
-        <ul id="history-list"></ul>
+        <div id="feedback-msg" class="feedback-msg"></div>
+      </div>
+
+      <div class="card history-card">
+        <h3>Recent Guesses</h3>
+        <ul id="history-list" class="history-list">
+          <li class="empty-state">Your round history will appear here.</li>
+        </ul>
       </div>
     </section>
 
+    <!-- About & AdSense Requirements View -->
     <section id="about-view" class="view hidden">
-      <h2>About Glotle</h2>
-      <p>Glotle is a fast-paced, endless language identification game designed to test your knowledge of world languages and scripts.</p>
-      
-      <hr>
+      <div class="card content-card">
+        <h2>About Glotle</h2>
+        <p>Glotle is a fast-paced language identification game designed to test your knowledge of world languages, scripts, and alphabets.</p>
+        
+        <hr class="divider">
 
-      <h2>Privacy Policy</h2>
-      <p>This site uses Google AdSense to serve advertisements. Google uses cookies to serve ads based on a user's prior visits to this website or other websites.</p>
-      <p>Google's use of advertising cookies enables it and its partners to serve ads to users based on their visit to your sites and/or other sites on the Internet. Users may opt out of personalized advertising by visiting Advertising Settings.</p>
+        <h2>Privacy Policy</h2>
+        <p>This site uses Google AdSense to serve advertisements. Google uses cookies to serve ads based on a user's prior visits to this website or other websites.</p>
+        <p>Google's use of advertising cookies enables it and its partners to serve ads to users based on their visit to your sites and/or other sites on the Internet.</p>
+        <p>Users may opt out of personalized advertising by visiting Google Advertising Settings.</p>
 
-      <h2>Contact Information</h2>
-      <p>For questions or support regarding Glotle, contact: contact@glotle-example.com</p>
+        <hr class="divider">
+
+        <h2>Terms of Service</h2>
+        <p>Glotle is provided for educational and entertainment purposes. By using this website, you agree to use it responsibly and in accordance with applicable local laws.</p>
+
+        <hr class="divider">
+
+        <h2>Contact Us</h2>
+        <p>For inquiries, support, or feedback, please email: <strong>contact@glotle-game.com</strong></p>
+      </div>
     </section>
   </main>
 
-  <div id="settings-modal" class="modal hidden">
-    <div class="modal-content">
-      <span id="close-modal" class="close-btn">&times;</span>
-      <h2>Settings</h2>
-      <div class="setting-option">
-        <label for="hard-mode">Hard Mode (No autocomplete hints)</label>
-        <input type="checkbox" id="hard-mode">
-      </div>
-      <div class="setting-option">
-        <label for="dark-mode">Dark Mode</label>
-        <input type="checkbox" id="dark-mode">
-      </div>
-    </div>
+  <!-- Bottom Ad Banner Placeholder for Google AdSense -->
+  <div class="ad-container bottom-ad">
+    <div class="ad-placeholder">Advertisement Space</div>
   </div>
 
   <script src="app.js"></script>
