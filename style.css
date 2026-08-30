@@ -101,30 +101,22 @@ nav {
   align-items: center; 
 }
 
-.nav-btn { 
-  background: transparent; 
-  border: none; 
-  color: var(--text-muted); 
-  font-weight: 600; 
-  padding: 0.5rem 1rem; 
-  border-radius: 8px; 
-  cursor: pointer; 
-}
-
-.nav-btn.active { 
-  background: var(--bg-color); 
-  color: var(--primary); 
-}
-
 .icon-btn { 
   background: var(--bg-color); 
   border: 1px solid var(--border-color); 
   padding: 0.5rem 0.8rem; 
   border-radius: 8px; 
   cursor: pointer; 
-  font-size: 0.9rem; 
+  font-size: 1.1rem; 
   font-weight: 600;
   color: var(--text-main);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-btn:hover {
+  border-color: var(--primary);
 }
 
 /* Ad Banners */
@@ -144,7 +136,7 @@ nav {
   font-size: 0.85rem; 
 }
 
-/* Main Layout */
+/* Main Layout & Hiding Logic */
 main { 
   max-width: 650px; 
   width: 100%; 
@@ -154,7 +146,7 @@ main {
 }
 
 .view.hidden { 
-  display: none; 
+  display: none !important; 
 }
 
 /* Cards */
@@ -341,7 +333,7 @@ button#submit-btn:hover {
   background: var(--primary-hover); 
 }
 
-/* Modal Styling */
+/* Modal Styling & Hiding Logic */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -356,7 +348,7 @@ button#submit-btn:hover {
 }
 
 .modal-overlay.hidden {
-  display: none;
+  display: none !important;
 }
 
 .modal-card {
@@ -435,6 +427,10 @@ button#submit-btn:hover {
   font-weight: 600;
 }
 
+.setting-row-spaced {
+  margin-top: 0.75rem;
+}
+
 .setting-toggle-btn {
   background: var(--card-bg);
   border: 1px solid var(--border-color);
@@ -445,7 +441,15 @@ button#submit-btn:hover {
   color: var(--text-main);
 }
 
-/* About View */
+.setting-toggle-btn:hover {
+  border-color: var(--primary);
+}
+
+/* About & Legal View Elements */
+.about-card-header {
+  margin-bottom: 1rem;
+}
+
 .divider { 
   border: none; 
   border-top: 1px solid var(--border-color); 
