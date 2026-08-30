@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LingoBounds</title>
+    <title>GlotGuessr - The Language Streak Game</title>
     <style>
         html, body {
             margin: 0;
@@ -39,12 +39,16 @@
             gap: 25px;
             margin-top: 40px;
         }
-        #score-counter {
+        #streak-display {
             text-align: center;
-            font-size: 1rem;
-            font-weight: 600;
-            color: #aaaaaa;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #ffa500;
             letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
         }
         #sentence-card {
             background-color: #1a1a1a;
@@ -161,12 +165,12 @@
 </head>
 <body>
 
-    <div id="header-bar">LINGOBOUNDS</div>
+    <div id="header-bar">GLOTGUESSR</div>
 
-    <div id="toast-notification">Wrong answer! Try again.</div>
+    <div id="toast-notification">Wrong answer! Streak Reset to 0 ➔</div>
 
     <div id="game-container">
-        <div id="score-counter">LEVEL: <span id="level-num">1</span></div>
+        <div id="streak-display">🔥 CURRENT STREAK: <span id="streak-num">0</span></div>
         <div id="sentence-card">"Loading challenge..."</div>
         
         <div id="input-container">
@@ -187,19 +191,29 @@
             { sentence: '"Tu devrais choisir ce que tu veux faire maintenant."', answer: "French" }
         ];
 
-        let currentLevelIndex = 0;
+        let currentStreak = 0;
+        let lastLevelIndex = -1;
         let isTransitioning = false;
 
         const sentenceCard = document.getElementById('sentence-card');
         const guessInput = document.getElementById('guess-input');
         const suggestionsBox = document.getElementById('suggestions-box');
         const submitBtn = document.getElementById('submit-btn');
-        const levelNumDisplay = document.getElementById('level-num');
+        const streakNumDisplay = document.getElementById('streak-num');
         const toast = document.getElementById('toast-notification');
 
-        function loadCurrentLevel() {
-            const activeLevel = gameLevels[currentLevelIndex];
-            levelNumDisplay.textContent = currentLevelIndex + 1;
+        function getRandomLevel() {
+            let nextIndex = Math.floor(Math.random() * gameLevels.length);
+            while (nextIndex === lastLevelIndex && gameLevels.length > 1) {
+                nextIndex = Math.floor(Math.random() * gameLevels.length);
+            }
+            lastLevelIndex = nextIndex;
+            return gameLevels[nextIndex];
+        }
+
+        function loadNextChallenge() {
+            const activeLevel = getRandomLevel();
+            streakNumDisplay.textContent = currentStreak;
             sentenceCard.textContent = activeLevel.sentence;
             sentenceCard.classList.remove('correct');
             guessInput.value = '';
@@ -251,10 +265,11 @@
             const userGuess = guessInput.value.trim();
             if (!userGuess) return;
 
-            const correctAnswer = gameLevels[currentLevelIndex].answer;
+            const correctAnswer = gameLevels[lastLevelIndex].answer;
 
             if (userGuess.toLowerCase() === correctAnswer.toLowerCase()) {
                 isTransitioning = true;
+                currentStreak++;
                 suggestionsBox.style.display = 'none';
                 
                 sentenceCard.classList.add('correct');
@@ -264,29 +279,13 @@
                 submitBtn.textContent = 'NEXT CHALLENGE LOADING...';
 
                 setTimeout(() => {
-                    currentLevelIndex = (currentLevelIndex + 1) % gameLevels.length;
-                    loadCurrentLevel();
+                    loadNextChallenge();
                 }, 1500);
 
             } else {
+                currentStreak = 0;
+                streakNumDisplay.textContent = currentStreak;
                 toast.classList.add('show');
                 setTimeout(() => {
                     toast.classList.remove('show');
                 }, 2000);
-                guessInput.value = '';
-            }
-        }
-
-        submitBtn.addEventListener('click', evaluateGuess);
-
-        guessInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                evaluateGuess();
-            }
-        });
-
-        loadCurrentLevel();
-    </script>
-
-</body>
-</html>
