@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#121212">
+<title>LingoClues</title>
+<style>
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background: #121212;
+  color: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.app {
+  width: 100%;
+  max-width: 620px;
+  min-height: 100vh;
+  padding: 22px 18px 32px;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0 28px;
+}
+
+.logo {
+  font-size: 1.15rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+}
+
+.streak {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #d7d7d7;
+}
+
+.fire {
+  font-size: 1.2rem;
+}
+
+.game {
+  width: 100%;
+}
+
+.eyebrow {
+  margin: 0 0 9px;
+  color: #8c8c8c;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(2rem, 10vw, 3.4rem);
+  line-height: 1;
+  letter-spacing: -0.055em;
+}
+
+.subtitle {
+  margin: 14px 0 28px;
+  color: #9b9b9b;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.clues {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.clue {
+  display: flex;
+  gap: 13px;
+  align-items: flex-start;
+  padding: 16px;
+  border: 1px solid #2b2b2b;
+  border-radius: 14px;
+  background: #181818;
+  animation: appear 0.2s ease-out;
+}
+
+.clue-number {
+  flex: 0 0 auto;
+  width: 25px;
+  height: 25px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #292929;
+  color: #aaa;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.clue-text {
+  margin: 1px 0 0;
+  color: #ededed;
+  font-size: 0.96rem;
+  line-height: 1.45;
+}
+
+.hidden {
+  display: none;
+}
+
+.reveal {
+  width: 100%;
+  margin: 16px 0 25px;
+  padding: 15px 18px;
+  border: 1px solid #3a3a3a;
+  border-radius: 13px;
+  background: #222;
+  color: #fff;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.15s;
+}
+
+.reveal:hover {
+  background: #2c2c2c;
+}
+
+.reveal:active,
+.submit:active,
+.share:active {
+  transform: scale(0.98);
+}
+
+.guess-area {
+  padding-top: 2px;
+}
+
+label {
+  display: block;
+  margin-bottom: 9px;
+  color: #bdbdbd;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.input-row {
+  display: flex;
+  gap: 9px;
+}
+
+input {
+  width: 100%;
+  min-width: 0;
+  padding: 15px 14px;
+  border: 1px solid #343434;
+  border-radius: 12px;
+  outline: none;
+  background: #1b1b1b;
+  color: #fff;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+input::placeholder {
+  color: #666;
+}
+
+input:focus {
+  border-color: #707070;
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.05);
+}
+
+.submit {
+  flex: 0 0 auto;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 12px;
+  background: #fff;
+  color: #111;
+  font-weight: 900;
+  cursor: pointer;
+  transition: transform 0.15s, opacity 0.15s;
+}
+
+.submit:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.message {
+  min-height: 24px;
+  margin: 10px 2px 0;
+  color: #929292;
+  font-size: 0.82rem;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0,0,0,0.76);
+  backdrop-filter: blur(7px);
+}
+
+.modal-backdrop.open {
+  display: flex;
+}
+
+.modal {
+  width: 100%;
+  max-width: 390px;
+  padding: 30px 24px 24px;
+  border: 1px solid #303030;
+  border-radius: 22px;
+  background: #191919;
+  text-align: center;
+  box-shadow: 0 20px 70px rgba(0,0,0,0.45);
+  animation: modalIn 0.22s ease-out;
+}
+
+.success-mark {
+  width: 54px;
+  height: 54px;
+  margin: 0 auto 17px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #fff;
+  color: #111;
+  font-size: 1.45rem;
+  font-weight: 900;
+}
+
+.modal h2 {
+  margin: 0;
+  font-size: 1.65rem;
+  letter-spacing: -0.035em;
+}
+
+.answer {
+  margin: 8px 0 21px;
+  color: #999;
+  font-size: 0.92rem;
+}
+
+.score {
+  margin: 0;
+  font-size: 3.5rem;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.07em;
+}
+
+.score-label {
+  margin: 7px 0 22px;
+  color: #777;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.share {
+  width: 100%;
+  padding: 14px;
+  border: 0;
+  border-radius: 12px;
+  background: #fff;
+  color: #111;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.share-status {
+  min-height: 19px;
+  margin: 10px 0 0;
+  color: #858585;
+  font-size: 0.76rem;
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (min-width: 600px) {
+  .app {
+    padding: 30px 24px 40px;
+  }
+
+  header {
+    padding-bottom: 42px;
+  }
+
+  .subtitle {
+    margin-bottom: 32px;
+  }
+}
+</style>
+</head>
+<body>
+<main class="app">
+  <header>
+    <div class="logo">LINGOCLUES</div>
+    <div class="streak">
+      <span class="fire">🔥</span>
+      <span id="streakCount">0</span>
+    </div>
+  </header>
+
+  <section class="game">
+    <p class="eyebrow">Daily country</p>
+    <h1>Where in the world?</h1>
+    <p class="subtitle">Five clues. One country. Use as few clues as possible.</p>
+
+    <div class="clues" id="clues"></div>
+
+    <button class="reveal" id="revealButton" type="button">Reveal Next Clue</button>
+
+    <form class="guess-area" id="guessForm" autocomplete="off">
+      <label for="countryGuess">Your guess</label>
+      <div class="input-row">
+        <input
+          id="countryGuess"
+          name="country"
+          type="text"
+          list="countryNames"
+          placeholder="Type a country..."
+          spellcheck="false"
+          aria-label="Country guess"
+        >
+        <button class="submit" type="submit">Submit</button>
+      </div>
+      <datalist id="countryNames"></datalist>
+      <div class="message" id="message" aria-live="polite"></div>
+    </form>
+  </section>
+</main>
+
+<div class="modal-backdrop" id="successModal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="successTitle">
+    <div class="success-mark">✓</div>
+    <h2 id="successTitle">Nice work!</h2>
+    <p class="answer" id="answerText"></p>
+    <p class="score" id="scoreText">5/5</p>
+    <p class="score-label">Daily score</p>
+    <button class="share" id="shareButton" type="button">Share Score</button>
+    <div class="share-status" id="shareStatus"></div>
+  </div>
+</div>
+
+<script>
+const countryData = {
+  "2026-08-28": {
+    country: "Finland",
+    clues: [
+      "This country is in Northern Europe.",
+      "It has thousands of lakes and is known for its forests.",
+      "Its capital is Helsinki.",
+      "Finnish and Swedish are its official national languages.",
+      "It shares a long eastern border with Russia."
+    ]
+  },
+  "2026-08-29": {
+    country: "Paraguay",
+    clues: [
+      "This landlocked country is in South America.",
+      "The Paraguay River divides much of the country into two distinct regions.",
+      "Its capital is Asunción.",
+      "Spanish and Guaraní are its official languages.",
+      "It borders Brazil, Bolivia, and Argentina."
+    ]
+  },
+  "2026-08-30": {
+    country: "Japan",
+    clues: [
+      "This country is an island nation in East Asia.",
+      "It is made up of thousands of islands.",
+      "Its capital is Tokyo.",
+      "The Japanese yen is its national currency.",
+      "Mount Fuji is its highest mountain and one of its best-known landmarks."
+    ]
+  }
+};
+
+const fallbackCountries = [
+  {
+    country: "Finland",
+    clues: countryData["2026-08-28"].clues
+  },
+  {
+    country: "Paraguay",
+    clues: countryData["2026-08-29"].clues
+  },
+  {
+    country: "Japan",
+    clues: countryData["2026-08-30"].clues
+  }
+];
+
+const validCountries = [
+  "Afghanistan",
+  "Albania",
+  "Algeria",
+  "Andorra",
+  "Angola",
+  "Antigua and Barbuda",
+  "Argentina",
+  "Armenia",
+  "Australia",
+  "Austria",
+  "Azerbaijan",
+  "Bahamas",
+  "Bahrain",
+  "Bangladesh",
+  "Barbados",
+  "Belarus",
+  "Belgium",
+  "Belize",
+  "Benin",
+  "Bhutan",
+  "Bolivia",
+  "Bosnia and Herzegovina",
+  "Botswana",
+  "Brazil",
+  "Brunei",
+  "Bulgaria",
+  "Burkina Faso",
+  "Burundi",
+  "Cabo Verde",
+  "Cambodia",
+  "Cameroon",
+  "Canada",
+  "Central African Republic",
+  "Chad",
+  "Chile",
+  "China",
+  "Colombia",
+  "Comoros",
+  "Congo",
+  "Costa Rica",
+  "Croatia",
+  "Cuba",
+  "Cyprus",
+  "Czechia",
+  "Denmark",
+  "Djibouti",
+  "Dominica",
+  "Dominican Republic",
+  "Ecuador",
+  "Egypt",
+  "El Salvador",
+  "Equatorial Guinea",
+  "Eritrea",
+  "Estonia",
+  "Eswatini",
+  "Ethiopia",
+  "Fiji",
+  "Finland",
+  "France",
+  "Gabon",
+  "Gambia",
+  "Georgia",
+  "Germany",
+  "Ghana",
+  "Greece",
+  "Grenada",
+  "Guatemala",
+  "Guinea",
+  "Guinea-Bissau",
+  "Guyana",
+  "Haiti",
+  "Honduras",
+  "Hungary",
+  "Iceland",
+  "India",
+  "Indonesia",
+  "Iran",
+  "Iraq",
+  "Ireland",
+  "Israel",
+  "Italy",
+  "Jamaica",
+  "Japan",
+  "Jordan",
+  "Kazakhstan",
+  "Kenya",
+  "Kiribati",
+  "Kuwait",
+  "Kyrgyzstan",
+  "Laos",
+  "Latvia",
+  "Lebanon",
+  "Lesotho",
+  "Liberia",
+  "Libya",
+  "Liechtenstein",
+  "Lithuania",
+  "Luxembourg",
+  "Madagascar",
+  "Malawi",
+  "Malaysia",
+  "Maldives",
+  "Mali",
+  "Malta",
+  "Marshall Islands",
+  "Mauritania",
+  "Mauritius",
+  "Mexico",
+  "Micronesia",
+  "Moldova",
+  "Monaco",
+  "Mongolia",
+  "Montenegro",
+  "Morocco",
+  "Mozambique",
+  "Myanmar",
+  "Namibia",
+  "Nauru",
+  "Nepal",
+  "Netherlands",
+  "New Zealand",
+  "Nicaragua",
+  "Niger",
+  "Nigeria",
+  "North Korea",
+  "North Macedonia",
+  "Norway",
+  "Oman",
+  "Pakistan",
+  "Palau",
+  "Palestine",
+  "Panama",
+  "Papua New Guinea",
+  "Paraguay",
+  "Peru",
+  "Philippines",
+  "Poland",
+  "Portugal",
+  "Qatar",
+  "Romania",
+  "Russia",
+  "Rwanda",
+  "Saint Kitts and Nevis",
+  "Saint Lucia",
+  "Saint Vincent and the Grenadines",
+  "Samoa",
+  "San Marino",
+  "São Tomé and Príncipe",
+  "Saudi Arabia",
+  "Senegal",
+  "Serbia",
+  "Seychelles",
+  "Sierra Leone",
+  "Singapore",
+  "Slovakia",
+  "Slovenia",
+  "Solomon Islands",
+  "Somalia",
+  "South Africa",
+  "South Korea",
+  "South Sudan",
+  "Spain",
+  "Sri Lanka",
+  "Sudan",
+  "Suriname",
+  "Sweden",
+  "Switzerland",
+  "Syria",
+  "Taiwan",
+  "Tajikistan",
+  "Tanzania",
+  "Thailand",
+  "Timor-Leste",
+  "Togo",
+  "Tonga",
+  "Trinidad and Tobago",
+  "Tunisia",
+  "Türkiye",
+  "Turkmenistan",
+  "Tuvalu",
+  "Uganda",
+  "Ukraine",
+  "United Arab Emirates",
+  "United Kingdom",
+  "United States",
+  "Uruguay",
+  "Uzbekistan",
+  "Vanuatu",
+  "Vatican City",
+  "Venezuela",
+  "Vietnam",
+  "Yemen",
+  "Zambia",
+  "Zimbabwe"
+];
+
+const cluesElement = document.getElementById("clues");
+const revealButton = document.getElementById("revealButton");
+const guessForm = document.getElementById("guessForm");
+const guessInput = document.getElementById("countryGuess");
+const messageElement = document.getElementById("message");
+const datalist = document.getElementById("countryNames");
+const streakElement = document.getElementById("streakCount");
+const successModal = document.getElementById("successModal");
+const answerText = document.getElementById("answerText");
+const scoreText = document.getElementById("scoreText");
+const shareButton = document.getElementById("shareButton");
+const shareStatus = document.getElementById("shareStatus");
+
+validCountries.forEach(country => {
+  const option = document.createElement("option");
+  option.value = country;
+  datalist.appendChild(option);
+});
+
+function getLocalDateKey(date = new Date()) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function daysSinceEpoch(dateKey) {
+  const parts = dateKey.split("-").map(Number);
+  const date = Date.UTC(parts[0], parts[1] - 1, parts[2]);
+  return Math.floor(date / 86400000);
+}
+
+function getTodayGame() {
+  const today = getLocalDateKey();
+
+  if (countryData[today]) {
+    return countryData[today];
+  }
+
+  const index = ((daysSinceEpoch(today) % fallbackCountries.length) + fallbackCountries.length) % fallbackCountries.length;
+  return fallbackCountries[index];
+}
+
+function normalizeCountry(value) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, " ");
+}
+
+const game = getTodayGame();
+let visibleClues = 1;
+let finished = false;
+
+function renderClues() {
+  cluesElement.innerHTML = "";
+
+  game.clues.forEach((clue, index) => {
+    if (index >= visibleClues) {
+      return;
+    }
+
+    const clueElement = document.createElement("article");
+    clueElement.className = "clue";
+
+    const numberElement = document.createElement("div");
+    numberElement.className = "clue-number";
+    numberElement.textContent = index + 1;
+
+    const textElement = document.createElement("p");
+    textElement.className = "clue-text";
+    textElement.textContent = clue;
+
+    clueElement.appendChild(numberElement);
+    clueElement.appendChild(textElement);
+    cluesElement.appendChild(clueElement);
+  });
+
+  if (visibleClues >= game.clues.length) {
+    revealButton.textContent = "All Clues Revealed";
+    revealButton.disabled = true;
+    revealButton.style.opacity = "0.45";
+  } else {
+    revealButton.textContent = `Reveal Clue ${visibleClues + 1}`;
+  }
+}
+
+function getStreakData() {
+  try {
+    return JSON.parse(localStorage.getItem("lingoCluesStreak")) || {
+      count: 0,
+      lastDate: ""
+    };
+  } catch {
+    return {
+      count: 0,
+      lastDate: ""
+    };
+  }
+}
+
+function updateStreak() {
+  const today = getLocalDateKey();
+  const data = getStreakData();
+  streakElement.textContent = data.count || 0;
+}
+
+function recordWin() {
+  const today = getLocalDateKey();
+  const data = getStreakData();
+
+  if (data.lastDate === today) {
+    return data.count;
+  }
+
+  const previous = new Date();
+  previous.setDate(previous.getDate() - 1);
+  const yesterday = getLocalDateKey(previous);
+
+  const nextCount = data.lastDate === yesterday ? (data.count || 0) + 1 : 1;
+
+  localStorage.setItem("lingoCluesStreak", JSON.stringify({
+    count: nextCount,
+    lastDate: today
+  }));
+
+  streakElement.textContent = nextCount;
+  return nextCount;
+}
+
+function alreadyPlayedToday() {
+  try {
+    const saved = JSON.parse(localStorage.getItem("lingoCluesPlayed"));
+    return saved && saved.date === getLocalDateKey();
+  } catch {
+    return false;
+  }
+}
+
+function saveTodayResult(score) {
+  localStorage.setItem("lingoCluesPlayed", JSON.stringify({
+    date: getLocalDateKey(),
+    score
+  }));
+}
+
+function openSuccess(score) {
+  finished = true;
+  saveTodayResult(score);
+  recordWin();
+
+  answerText.textContent = `The secret country was ${game.country}.`;
+  scoreText.textContent = `${score}/5`;
+  successModal.classList.add("open");
+  shareStatus.textContent = "";
+  guessInput.blur();
+}
+
+function getShareGrid(score) {
+  return Array.from({ length: 5 }, (_, index) =>
+    index < 6 - score ? "🟩" : "⬜"
+  ).join("");
+}
+
+function getShareText(score) {
+  return `LingoClues ${getLocalDateKey()}\n${getShareGrid(score)} ${score}/5`;
+}
+
+revealButton.addEventListener("click", () => {
+  if (finished || visibleClues >= game.clues.length) {
+    return;
+  }
+
+  visibleClues += 1;
+  renderClues();
+});
+
+guessForm.addEventListener("submit", event => {
+  event.preventDefault();
+
+  if (finished) {
+    return;
+  }
+
+  const guess = normalizeCountry(guessInput.value);
+  const answer = normalizeCountry(game.country);
+
+  if (!guess) {
+    messageElement.textContent = "Enter a country to submit your guess.";
+    guessInput.focus();
+    return;
+  }
+
+  if (!validCountries.some(country => normalizeCountry(country) === guess)) {
+    messageElement.textContent = "Choose a country from the suggestions.";
+    guessInput.focus();
+    return;
+  }
+
+  if (guess === answer) {
+    const score = 6 - visibleClues;
+    openSuccess(score);
+    return;
+  }
+
+  messageElement.textContent = "Not quite. Try another country or reveal another clue.";
+  guessInput.select();
+});
+
+shareButton.addEventListener("click", async () => {
+  const score = Number(scoreText.textContent.split("/")[0]);
+  const shareText = getShareText(score);
+
+  try {
+    await navigator.clipboard.writeText(shareText);
+    shareStatus.textContent = "Score copied!";
+  } catch {
+    const temporary = document.createElement("textarea");
+    temporary.value = shareText;
+    temporary.style.position = "fixed";
+    temporary.style.opacity = "0";
+    document.body.appendChild(temporary);
+    temporary.select();
+    document.execCommand("copy");
+    temporary.remove();
+    shareStatus.textContent = "Score copied!";
+  }
+});
+
+if (alreadyPlayedToday()) {
+  const saved = JSON.parse(localStorage.getItem("lingoCluesPlayed"));
+  finished = true;
+  visibleClues = 5;
+  renderClues();
+  revealButton.textContent = "Today's Puzzle Complete";
+  revealButton.disabled = true;
+  revealButton.style.opacity = "0.45";
+  messageElement.textContent = `Today's puzzle is complete. Your score was ${saved.score}/5.`;
+} else {
+  renderClues();
+}
+
+updateStreak();
+</script>
+</body>
+</html>
