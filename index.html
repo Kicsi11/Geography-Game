@@ -15,6 +15,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            overflow: hidden;
         }
         #header-bar {
             width: 100%;
@@ -38,17 +39,33 @@
             gap: 25px;
             margin-top: 40px;
         }
+        #score-counter {
+            text-align: center;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #aaaaaa;
+            letter-spacing: 1px;
+        }
         #sentence-card {
             background-color: #1a1a1a;
             border: 1px solid #2a2a2a;
             border-radius: 12px;
-            padding: 30px 20px;
+            padding: 40px 20px;
             text-align: center;
             font-size: 1.35rem;
             font-weight: 500;
             line-height: 1.6;
             letter-spacing: 0.5px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+        #sentence-card.correct {
+            border-color: #34c759;
+            transform: scale(1.02);
         }
         #input-container {
             position: relative;
@@ -67,10 +84,16 @@
             padding: 0 15px;
             box-sizing: border-box;
             outline: none;
-            transition: border-color 0.2s;
+            transition: border-color 0.3s, background-color 0.3s;
         }
         input:focus {
             border-color: #4a4a4a;
+        }
+        input.success-flash {
+            background-color: rgba(52, 199, 89, 0.2);
+            border-color: #34c759;
+            color: #34c759;
+            font-weight: bold;
         }
         #suggestions-box {
             position: absolute;
@@ -80,7 +103,7 @@
             background-color: #1a1a1a;
             border: 2px solid #2a2a2a;
             border-radius: 8px;
-            max-height: 200px;
+            max-height: 180px;
             overflow-y: auto;
             z-index: 10;
             display: none;
@@ -108,11 +131,31 @@
             font-size: 1.1rem;
             font-weight: 700;
             cursor: pointer;
-            transition: opacity 0.2s;
+            transition: opacity 0.2s, background-color 0.3s, color 0.3s;
             margin-top: 5px;
         }
         button:active {
             opacity: 0.9;
+        }
+        button.success-flash {
+            background-color: #34c759;
+            color: white;
+        }
+        #toast-notification {
+            position: fixed;
+            top: -70px;
+            background-color: #ff3b30;
+            color: white;
+            padding: 14px 28px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 1rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            transition: top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 100;
+        }
+        #toast-notification.show {
+            top: 20px;
         }
     </style>
 </head>
@@ -120,8 +163,11 @@
 
     <div id="header-bar">LINGOBOUNDS</div>
 
+    <div id="toast-notification">Wrong answer! Try again.</div>
+
     <div id="game-container">
-        <div id="sentence-card">"Akkor döntsd el, hogy mit szeretnél csinálni."</div>
+        <div id="score-counter">LEVEL: <span id="level-num">1</span></div>
+        <div id="sentence-card">"Loading challenge..."</div>
         
         <div id="input-container">
             <input type="text" id="guess-input" placeholder="Type a language..." autocomplete="off">
@@ -131,14 +177,41 @@
     </div>
 
     <script>
-        const languages = ["Basque", "Finnish", "Hungarian", "Romani", "Romanian", "Romansh"];
-        const correctAnswer = "Hungarian";
+        const dictionary = ["Basque", "Finnish", "French", "German", "Hungarian", "Japanese", "Romani", "Romanian", "Romansh", "Spanish"];
+        
+        const gameLevels = [
+            { sentence: '"Akkor döntsd el, hogy mit szeretnél csinálni."', answer: "Hungarian" },
+            { sentence: '"¿Podrías decirme dónde está la estación de tren?"', answer: "Spanish" },
+            { sentence: '"Es gibt hier eine wunderschöne alte Bibliothek."', answer: "German" },
+            { sentence: '"この古い図書館には美しい本がたくさんあります。"', answer: "Japanese" },
+            { sentence: '"Tu devrais choisir ce que tu veux faire maintenant."', answer: "French" }
+        ];
 
+        let currentLevelIndex = 0;
+        let isTransitioning = false;
+
+        const sentenceCard = document.getElementById('sentence-card');
         const guessInput = document.getElementById('guess-input');
         const suggestionsBox = document.getElementById('suggestions-box');
         const submitBtn = document.getElementById('submit-btn');
+        const levelNumDisplay = document.getElementById('level-num');
+        const toast = document.getElementById('toast-notification');
+
+        function loadCurrentLevel() {
+            const activeLevel = gameLevels[currentLevelIndex];
+            levelNumDisplay.textContent = currentLevelIndex + 1;
+            sentenceCard.textContent = activeLevel.sentence;
+            sentenceCard.classList.remove('correct');
+            guessInput.value = '';
+            guessInput.className = '';
+            submitBtn.className = '';
+            submitBtn.textContent = 'SUBMIT GUESS';
+            isTransitioning = false;
+            guessInput.focus();
+        }
 
         guessInput.addEventListener('input', () => {
+            if (isTransitioning) return;
             const query = guessInput.value.toLowerCase().trim();
             suggestionsBox.innerHTML = '';
             
@@ -147,7 +220,7 @@
                 return;
             }
 
-            const filtered = languages.filter(lang => lang.toLowerCase().startsWith(query));
+            const filtered = dictionary.filter(lang => lang.toLowerCase().startsWith(query));
 
             if (filtered.length > 0) {
                 filtered.forEach(lang => {
@@ -157,6 +230,7 @@
                     item.addEventListener('click', () => {
                         guessInput.value = lang;
                         suggestionsBox.style.display = 'none';
+                        evaluateGuess();
                     });
                     suggestionsBox.appendChild(item);
                 });
@@ -172,17 +246,46 @@
             }
         });
 
-        submitBtn.addEventListener('click', () => {
+        function evaluateGuess() {
+            if (isTransitioning) return;
             const userGuess = guessInput.value.trim();
             if (!userGuess) return;
 
+            const correctAnswer = gameLevels[currentLevelIndex].answer;
+
             if (userGuess.toLowerCase() === correctAnswer.toLowerCase()) {
-                alert('🎉 Correct! That is Hungarian.');
+                isTransitioning = true;
+                suggestionsBox.style.display = 'none';
+                
+                sentenceCard.classList.add('correct');
+                guessInput.classList.add('success-flash');
+                submitBtn.classList.add('success-flash');
+                guessInput.value = 'CORRECT!';
+                submitBtn.textContent = 'NEXT CHALLENGE LOADING...';
+
+                setTimeout(() => {
+                    currentLevelIndex = (currentLevelIndex + 1) % gameLevels.length;
+                    loadCurrentLevel();
+                }, 1500);
+
             } else {
-                alert('❌ Wrong answer! Try again.');
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 2000);
+                guessInput.value = '';
             }
-            guessInput.value = '';
+        }
+
+        submitBtn.addEventListener('click', evaluateGuess);
+
+        guessInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                evaluateGuess();
+            }
         });
+
+        loadCurrentLevel();
     </script>
 
 </body>
