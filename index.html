@@ -213,15 +213,19 @@
 
         function loadNextChallenge() {
             const activeLevel = getRandomLevel();
-            streakNumDisplay.textContent = currentStreak;
-            sentenceCard.textContent = activeLevel.sentence;
-            sentenceCard.classList.remove('correct');
-            guessInput.value = '';
-            guessInput.className = '';
-            submitBtn.className = '';
-            submitBtn.textContent = 'SUBMIT GUESS';
+            if (streakNumDisplay) streakNumDisplay.textContent = currentStreak;
+            if (sentenceCard) sentenceCard.textContent = activeLevel.sentence;
+            if (sentenceCard) sentenceCard.classList.remove('correct');
+            if (guessInput) {
+                guessInput.value = '';
+                guessInput.className = '';
+            }
+            if (submitBtn) {
+                submitBtn.className = '';
+                submitBtn.textContent = 'SUBMIT GUESS';
+            }
             isTransitioning = false;
-            guessInput.focus();
+            if (guessInput) guessInput.focus();
         }
 
         guessInput.addEventListener('input', () => {
@@ -285,7 +289,3 @@
             } else {
                 currentStreak = 0;
                 streakNumDisplay.textContent = currentStreak;
-                toast.classList.add('show');
-                setTimeout(() => {
-                    toast.classList.remove('show');
-                }, 2000);
