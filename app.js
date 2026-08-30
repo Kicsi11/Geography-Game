@@ -37,6 +37,7 @@ const streakEl = document.getElementById("streak-count");
 const bestStreakEl = document.getElementById("best-streak");
 const flashOverlay = document.getElementById("flash-overlay");
 const themeToggleBtn = document.getElementById("theme-toggle");
+const shareBtn = document.getElementById("share-btn");
 
 // Initialize Game
 bestStreakEl.innerHTML = `${bestStreak} <span class="trophy-icon">🏆</span>`;
@@ -116,11 +117,22 @@ function makeGuess() {
   if (userGuess.toLowerCase() === currentRound.language.toLowerCase()) {
     triggerFlash("correct-flash");
     streak++;
+
+    // Trigger Confetti on milestones (every 5 streak points)
+    if (streak % 5 === 0 && typeof confetti === "function") {
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+    }
+
     if (streak > bestStreak) {
       bestStreak = streak;
       localStorage.setItem("glotle_best", bestStreak);
       bestStreakEl.innerHTML = `${bestStreak} <span class="trophy-icon">🏆</span>`;
     }
+
     feedbackEl.style.color = "var(--accent-green)";
     feedbackEl.textContent = "Correct!";
     
@@ -151,6 +163,26 @@ function triggerFlash(className) {
   flashOverlay.className = className;
   setTimeout(() => { flashOverlay.className = ""; }, 200);
 }
+
+// Share Score to Clipboard
+shareBtn.addEventListener("click", () => {
+  const shareText = `🌐 Glotle Score\nStreak: ${streak} 🔥\nBest Streak: ${bestStreak} 🏆\nCan you beat my score?`;
+  
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(shareText).then(() => {
+      alert("Score copied to clipboard!");
+    });
+  } else {
+    // Fallback for non-HTTPS environments
+    const tempInput = document.createElement("textarea");
+    tempInput.value = shareText;
+    document.body.appendChild(tempInput);
+    tempInput.select();
+    document.execCommand("copy");
+    document.body.removeChild(tempInput);
+    alert("Score copied to clipboard!");
+  }
+});
 
 submitBtn.addEventListener("click", makeGuess);
 
