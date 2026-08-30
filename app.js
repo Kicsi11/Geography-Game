@@ -164,13 +164,14 @@ function triggerFlash(className) {
   setTimeout(() => { flashOverlay.className = ""; }, 200);
 }
 
-// Share Score to Clipboard
+// Share Score & Game Link to Clipboard
 shareBtn.addEventListener("click", () => {
-  const shareText = `🌐 Glotle Score\nStreak: ${streak} 🔥\nBest Streak: ${bestStreak} 🏆\nCan you beat my score?`;
+  const gameUrl = glotle.net;
+  const shareText = `🌐 Glotle Score\nStreak: ${streak} 🔥\nBest Streak: ${bestStreak} 🏆\nPlay here: ${gameUrl}`;
   
   if (navigator.clipboard && window.isSecureContext) {
     navigator.clipboard.writeText(shareText).then(() => {
-      alert("Score copied to clipboard!");
+      alert("Score and game link copied to clipboard!");
     });
   } else {
     // Fallback for non-HTTPS environments
@@ -180,7 +181,7 @@ shareBtn.addEventListener("click", () => {
     tempInput.select();
     document.execCommand("copy");
     document.body.removeChild(tempInput);
-    alert("Score copied to clipboard!");
+    alert("Score and game link copied to clipboard!");
   }
 });
 
