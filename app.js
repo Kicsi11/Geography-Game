@@ -27,7 +27,7 @@ let streak = 0;
 let bestStreak = parseInt(localStorage.getItem("glotle_best")) || 0;
 let selectedSuggestionIndex = -1;
 
-// Elements
+// DOM Elements
 const sentenceEl = document.getElementById("sentence-prompt");
 const inputEl = document.getElementById("language-input");
 const suggestionsEl = document.getElementById("suggestions-list");
@@ -56,11 +56,14 @@ inputEl.addEventListener("input", () => {
     const li = document.createElement("li");
     li.textContent = match;
     li.dataset.index = index;
+    
+    // Fills the text box without automatically submitting
     li.addEventListener("click", () => {
       inputEl.value = match;
       suggestionsEl.innerHTML = "";
-      makeGuess();
+      inputEl.focus();
     });
+    
     suggestionsEl.appendChild(li);
   });
 });
