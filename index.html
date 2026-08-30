@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <!-- Canvas Confetti Library -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <link rel="stylesheet" href="style.css">
 </head>
@@ -20,18 +21,18 @@
         <h1>Glotle</h1>
       </div>
       <nav>
-        <button id="nav-game-btn" class="nav-btn active">Play</button>
-        <button id="stats-modal-btn" class="icon-btn" title="Stats & Settings">⚙️ Stats & Settings</button>
-        <button id="nav-about-btn" class="nav-btn">About & Legal</button>
+        <button id="stats-modal-btn" class="icon-btn" title="Stats & Settings">⚙️</button>
       </nav>
     </div>
   </header>
 
+  <!-- Top Ad Banner Placeholder for Google AdSense -->
   <div class="ad-container top-ad">
     <div class="ad-placeholder">Advertisement Space</div>
   </div>
 
   <main>
+    <!-- Main Game View -->
     <section id="game-view" class="view">
       <div class="stats-card">
         <div class="stat-item">
@@ -66,8 +67,12 @@
       </div>
     </section>
 
+    <!-- About & Legal View -->
     <section id="about-view" class="view hidden">
       <div class="card content-card">
+        <div class="about-card-header">
+          <button id="back-to-game-btn" class="icon-btn">← Back to Game</button>
+        </div>
         <h2>About Glotle</h2>
         <p>Glotle is a fast-paced language identification game designed to test your knowledge of world languages, scripts, and alphabets.</p>
         
@@ -90,6 +95,7 @@
     </section>
   </main>
 
+  <!-- Stats & Settings Modal -->
   <div id="stats-modal" class="modal-overlay hidden">
     <div class="modal-card">
       <div class="modal-header">
@@ -120,11 +126,16 @@
             <span>Dark Theme</span>
             <button id="theme-toggle" class="setting-toggle-btn">🌙 Dark Mode</button>
           </div>
+          <div class="setting-row" style="margin-top: 0.75rem;">
+            <span>Information</span>
+            <button id="modal-about-btn" class="setting-toggle-btn">About & Legal</button>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- Bottom Ad Banner Placeholder for Google AdSense -->
   <div class="ad-container bottom-ad">
     <div class="ad-placeholder">Advertisement Space</div>
   </div>
