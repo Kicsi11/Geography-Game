@@ -27,7 +27,7 @@ let streak = 0;
 let bestStreak = parseInt(localStorage.getItem("glotle_best")) || 0;
 let selectedSuggestionIndex = -1;
 
-// Stats Object (Guesses, Accuracy Tracking, Best Streak)
+// Stats Object
 let userStats = JSON.parse(localStorage.getItem("glotle_user_stats")) || {
   guesses: 0,
   correctGuesses: 0,
@@ -54,10 +54,10 @@ const modalAboutBtn = document.getElementById("modal-about-btn");
 const backToGameBtn = document.getElementById("back-to-game-btn");
 
 // Initialize Game
-bestStreakEl.innerHTML = `${bestStreak} <span class="trophy-icon">🏆</span>`;
+bestStreakEl.textContent = bestStreak;
 loadNextRound();
 
-// Autocomplete Input Handling
+// Autocomplete Handling
 inputEl.addEventListener("input", () => {
   const query = inputEl.value.trim().toLowerCase();
   suggestionsEl.innerHTML = "";
@@ -135,13 +135,13 @@ function makeGuess() {
     userStats.correctGuesses++;
 
     if (streak % 5 === 0 && typeof confetti === "function") {
-      confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+      confetti({ particleCount: 80, spread: 60, origin: { y: 0.6 } });
     }
 
     if (streak > bestStreak) {
       bestStreak = streak;
       localStorage.setItem("glotle_best", bestStreak);
-      bestStreakEl.innerHTML = `${bestStreak} <span class="trophy-icon">🏆</span>`;
+      bestStreakEl.textContent = bestStreak;
     }
 
     if (streak > userStats.bestStreak) {
@@ -156,12 +156,12 @@ function makeGuess() {
     triggerFlash("wrong-flash");
     streak = 0;
     feedbackEl.style.color = "var(--accent-red)";
-    feedbackEl.textContent = `Wrong! That was ${currentRound.language}.`;
+    feedbackEl.textContent = `Incorrect. The answer was ${currentRound.language}.`;
     setTimeout(loadNextRound, 1000);
   }
 
   saveStats();
-  streakEl.innerHTML = `${streak} <span class="fire-icon">🔥</span>`;
+  streakEl.textContent = streak;
   inputEl.value = "";
   suggestionsEl.innerHTML = "";
 }
@@ -182,7 +182,7 @@ function saveStats() {
   localStorage.setItem("glotle_user_stats", JSON.stringify(userStats));
 }
 
-// Modal View Controls & Updates
+// Modal View Controls
 statsModalBtn.addEventListener("click", () => {
   document.getElementById("stat-guesses").textContent = userStats.guesses;
   const accuracy = userStats.guesses > 0 ? Math.round((userStats.correctGuesses / userStats.guesses) * 100) : 0;
@@ -196,13 +196,11 @@ closeModalBtn.addEventListener("click", () => {
   statsModal.classList.add("hidden");
 });
 
-// Navigate to About & Legal Page from inside Settings
 modalAboutBtn.addEventListener("click", () => {
   statsModal.classList.add("hidden");
   showView("about-view");
 });
 
-// Navigate Back to Main Game View
 backToGameBtn.addEventListener("click", () => {
   showView("game-view");
 });
@@ -214,8 +212,8 @@ function showView(viewId) {
 
 // Share Button
 shareBtn.addEventListener("click", () => {
-  const gameUrl = "https://kicsi11.github.io/Geography-Game/";
-  const shareText = `🌐 Glotle Score\nStreak: ${streak} 🔥\nBest Streak: ${bestStreak} 🏆\nPlay here: ${gameUrl}`;
+  const gameUrl = window.location.href;
+  const shareText = `Glotle Stats\nCurrent Streak: ${streak}\nBest Streak: ${bestStreak}\n${gameUrl}`;
 
   if (navigator.clipboard && window.isSecureContext) {
     navigator.clipboard.writeText(shareText).then(() => {
@@ -234,9 +232,9 @@ shareBtn.addEventListener("click", () => {
 
 submitBtn.addEventListener("click", makeGuess);
 
-// Dark Mode Toggle inside Modal Settings
+// Dark Mode Toggle
 themeToggleBtn.addEventListener("click", () => {
   document.body.classList.toggle("dark-theme");
   const isDark = document.body.classList.contains("dark-theme");
-  themeToggleBtn.textContent = isDark ? "☀️ Light Mode" : "🌙 Dark Mode";
+  themeToggleBtn.textContent = isDark ? "Light Mode" : "Dark Mode";
 });
