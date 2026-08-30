@@ -36,7 +36,6 @@ const feedbackEl = document.getElementById("feedback-msg");
 const streakEl = document.getElementById("streak-count");
 const bestStreakEl = document.getElementById("best-streak");
 const flashOverlay = document.getElementById("flash-overlay");
-const historyList = document.getElementById("history-list");
 const themeToggleBtn = document.getElementById("theme-toggle");
 
 // Initialize Game
@@ -57,7 +56,6 @@ inputEl.addEventListener("input", () => {
     li.textContent = match;
     li.dataset.index = index;
     
-    // Fills the text box without automatically submitting
     li.addEventListener("click", () => {
       inputEl.value = match;
       suggestionsEl.innerHTML = "";
@@ -115,9 +113,6 @@ function makeGuess() {
   const userGuess = inputEl.value.trim();
   if (!userGuess) return;
 
-  const emptyState = historyList.querySelector(".empty-state");
-  if (emptyState) emptyState.remove();
-
   if (userGuess.toLowerCase() === currentRound.language.toLowerCase()) {
     triggerFlash("correct-flash");
     streak++;
@@ -136,11 +131,6 @@ function makeGuess() {
     streak = 0;
     feedbackEl.style.color = "var(--accent-red)";
     feedbackEl.textContent = `Wrong! That was ${currentRound.language}.`;
-    
-    const historyItem = document.createElement("li");
-    historyItem.className = "history-item";
-    historyItem.innerHTML = `<span>❌ ${userGuess}</span> <span>Answer: <strong>${currentRound.language}</strong></span>`;
-    historyList.prepend(historyItem);
     
     setTimeout(loadNextRound, 1000);
   }
