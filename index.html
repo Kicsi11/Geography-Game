@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Glotle - Guess the Language</title>
+  <title>Glotle - Language Identification Game</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <!-- Canvas Confetti Library -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <link rel="stylesheet" href="style.css">
@@ -17,11 +17,20 @@
   <header>
     <div class="header-container">
       <div class="logo">
-        <span class="logo-icon">🌐</span>
+        <svg class="logo-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="2" y1="12" x2="22" y2="12"></line>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+        </svg>
         <h1>Glotle</h1>
       </div>
       <nav>
-        <button id="stats-modal-btn" class="icon-btn" title="Stats & Settings">⚙️</button>
+        <button id="stats-modal-btn" class="icon-btn" title="Settings and Statistics" aria-label="Settings and Statistics">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </button>
       </nav>
     </div>
   </header>
@@ -37,20 +46,44 @@
       <div class="stats-card">
         <div class="stat-item">
           <span class="stat-label">Current Streak</span>
-          <span class="stat-value" id="streak-count">0 <span class="fire-icon">🔥</span></span>
+          <span class="stat-value">
+            <svg class="ui-icon icon-fire" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3.5z"></path>
+            </svg>
+            <span id="streak-count">0</span>
+          </span>
         </div>
         <div class="stat-divider"></div>
         <div class="stat-item">
           <span class="stat-label">Best Streak</span>
-          <span class="stat-value" id="best-streak">0 <span class="trophy-icon">🏆</span></span>
+          <span class="stat-value">
+            <svg class="ui-icon icon-trophy" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+              <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+              <path d="M4 22h16"></path>
+              <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path>
+              <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path>
+              <path d="M18 2H6v7a6 6 0 0 0 12 0V2z"></path>
+            </svg>
+            <span id="best-streak">0</span>
+          </span>
         </div>
         <div class="stat-divider"></div>
-        <button id="share-btn" class="share-btn" title="Share your score">Share 🔗</button>
+        <button id="share-btn" class="share-btn" title="Share score">
+          <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="18" cy="5" r="3"></circle>
+            <circle cx="6" cy="12" r="3"></circle>
+            <circle cx="18" cy="19" r="3"></circle>
+            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+          </svg>
+          Share
+        </button>
       </div>
 
       <div class="card game-card">
         <div class="card-header">
-          <span class="badge">Round Language Challenge</span>
+          <span class="badge">Language Identification</span>
         </div>
         
         <blockquote id="sentence-prompt">"Loading sentence..."</blockquote>
@@ -62,7 +95,7 @@
             <input type="text" id="language-input" placeholder="Type a language (e.g. Romanian, Romani)..." autocomplete="off">
             <ul id="suggestions-list" class="suggestions-list"></ul>
           </div>
-          <button id="submit-btn">Guess ➔</button>
+          <button id="submit-btn">Submit</button>
         </div>
       </div>
     </section>
@@ -71,26 +104,32 @@
     <section id="about-view" class="view hidden">
       <div class="card content-card">
         <div class="about-card-header">
-          <button id="back-to-game-btn" class="icon-btn">← Back to Game</button>
+          <button id="back-to-game-btn" class="icon-btn text-btn">
+            <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            Back to Game
+          </button>
         </div>
         <h2>About Glotle</h2>
-        <p>Glotle is a fast-paced language identification game designed to test your knowledge of world languages, scripts, and alphabets.</p>
+        <p>Glotle is a language identification game designed to test your knowledge of world languages, scripts, and orthographies.</p>
         
         <hr class="divider">
 
         <h2>Privacy Policy</h2>
-        <p>This site uses Google AdSense to serve advertisements. Google uses cookies to serve ads based on a user's prior visits to this website or other websites.</p>
-        <p>Google's use of advertising cookies enables it and its partners to serve ads to users based on their visit to your sites and/or other sites on the Internet.</p>
+        <p>This site uses Google AdSense to serve advertisements. Google uses cookies to serve ads based on prior visits to this website or other websites.</p>
+        <p>Google's use of advertising cookies enables it and its partners to serve ads based on user visits to this site and/or other sites on the Internet.</p>
 
         <hr class="divider">
 
         <h2>Terms of Service</h2>
-        <p>Glotle is provided for educational and entertainment purposes. By using this website, you agree to use it responsibly and in accordance with applicable local laws.</p>
+        <p>Glotle is provided for educational and entertainment purposes. By using this website, you agree to use it responsibly and in accordance with applicable laws.</p>
 
         <hr class="divider">
 
-        <h2>Contact Us</h2>
-        <p>For inquiries, support, or feedback, please email: <strong>contact@glotle-game.com</strong></p>
+        <h2>Contact</h2>
+        <p>For inquiries, support, or feedback, please contact: <strong>contact@glotle-game.com</strong></p>
       </div>
     </section>
   </main>
@@ -99,8 +138,8 @@
   <div id="stats-modal" class="modal-overlay hidden">
     <div class="modal-card">
       <div class="modal-header">
-        <h2>Statistics 📊</h2>
-        <button id="close-modal-btn" class="close-btn">&times;</button>
+        <h2>Statistics &amp; Settings</h2>
+        <button id="close-modal-btn" class="close-btn" aria-label="Close modal">&times;</button>
       </div>
       <div class="modal-body">
         <div class="stats-grid">
@@ -120,15 +159,15 @@
 
         <hr class="divider">
 
-        <h3>Settings ⚙️</h3>
+        <h3>Preferences</h3>
         <div class="settings-list">
           <div class="setting-row">
             <span>Dark Theme</span>
-            <button id="theme-toggle" class="setting-toggle-btn">🌙 Dark Mode</button>
+            <button id="theme-toggle" class="setting-toggle-btn">Dark Mode</button>
           </div>
           <div class="setting-row setting-row-spaced">
             <span>Information</span>
-            <button id="modal-about-btn" class="setting-toggle-btn">About & Legal</button>
+            <button id="modal-about-btn" class="setting-toggle-btn">About &amp; Legal</button>
           </div>
         </div>
       </div>
