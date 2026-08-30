@@ -22,10 +22,25 @@ const database = [
   { text: "Быстрая коричневая лиса прыгает через ленивую собаку.", language: "Russian" }
 ];
 
+let gameMode = "endless"; // "endless" or "daily"
 let currentRound = null;
 let streak = 0;
 let bestStreak = parseInt(localStorage.getItem("glotle_best")) || 0;
 let selectedSuggestionIndex = -1;
+
+// Daily Challenge State
+let dailyRoundIndex = 0;
+let dailyScore = 0;
+const todayKey = new Date().toISOString().slice(0, 10);
+let dailyCompleted = localStorage.getItem(`glotle_daily_${todayKey}`) === "true";
+
+// Stats Tracking
+let userStats = JSON.parse(localStorage.getItem("glotle_user_stats")) || {
+  played: 0,
+  wins: 0,
+  currStreak: 0,
+  bestStreak: 0
+};
 
 // DOM Elements
 const sentenceEl = document.getElementById("sentence-prompt");
@@ -38,6 +53,13 @@ const bestStreakEl = document.getElementById("best-streak");
 const flashOverlay = document.getElementById("flash-overlay");
 const themeToggleBtn = document.getElementById("theme-toggle");
 const shareBtn = document.getElementById("share-btn");
+const roundBadge = document.getElementById("round-badge");
+const modeLabel = document.getElementById("mode-label");
+
+// Stats Modal Elements
+const statsModalBtn = document.getElementById("stats-modal-btn");
+const statsModal = document.getElementById("stats-modal");
+const closeModalBtn = document.getElementById("close-modal-btn");
 
 // Initialize Game
 bestStreakEl.innerHTML = `${bestStreak} <span class="trophy-icon">🏆</span>`;
@@ -67,7 +89,7 @@ inputEl.addEventListener("input", () => {
   });
 });
 
-// Keyboard Navigation for Autocomplete
+// Keyboard Navigation
 inputEl.addEventListener("keydown", (e) => {
   const items = suggestionsEl.querySelectorAll("li");
   
@@ -104,7 +126,6 @@ function updateSuggestionSelection(items) {
   });
 }
 
-// Close autocomplete when clicking outside
 document.addEventListener("click", (e) => {
   if (e.target !== inputEl) suggestionsEl.innerHTML = "";
 });
@@ -114,47 +135,92 @@ function makeGuess() {
   const userGuess = inputEl.value.trim();
   if (!userGuess) return;
 
+  userStats.played++;
+
   if (userGuess.toLowerCase() === currentRound.language.toLowerCase()) {
     triggerFlash("correct-flash");
-    streak++;
+    userStats.wins++;
+    userStats.currStreak++;
 
-    // Trigger Confetti on milestones (every 5 streak points)
-    if (streak % 5 === 0 && typeof confetti === "function") {
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 }
-      });
+    if (gameMode === "endless") {
+      streak++;
+      if (streak % 5 === 0 && typeof confetti === "function") {
+        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+      }
+      if (streak > bestStreak) {
+        bestStreak = streak;
+        localStorage.setItem("glotle_best", bestStreak);
+        bestStreakEl.innerHTML = `${bestStreak} <span class="trophy-icon">🏆</span>`;
+      }
+    } else {
+      dailyScore++;
     }
 
-    if (streak > bestStreak) {
-      bestStreak = streak;
-      localStorage.setItem("glotle_best", bestStreak);
-      bestStreakEl.innerHTML = `${bestStreak} <span class="trophy-icon">🏆</span>`;
+    if (userStats.currStreak > userStats.bestStreak) {
+      userStats.bestStreak = userStats.currStreak;
     }
 
     feedbackEl.style.color = "var(--accent-green)";
     feedbackEl.textContent = "Correct!";
-    
     setTimeout(loadNextRound, 400);
 
   } else {
     triggerFlash("wrong-flash");
-    streak = 0;
+    userStats.currStreak = 0;
+
+    if (gameMode === "endless") {
+      streak = 0;
+    }
+
     feedbackEl.style.color = "var(--accent-red)";
     feedbackEl.textContent = `Wrong! That was ${currentRound.language}.`;
-    
     setTimeout(loadNextRound, 1000);
   }
 
-  streakEl.innerHTML = `${streak} <span class="fire-icon">🔥</span>`;
+  saveStats();
+  if (gameMode === "endless") {
+    streakEl.innerHTML = `${streak} <span class="fire-icon">🔥</span>`;
+  }
   inputEl.value = "";
   suggestionsEl.innerHTML = "";
 }
 
 function loadNextRound() {
-  const randomIndex = Math.floor(Math.random() * database.length);
-  currentRound = database[randomIndex];
+  if (gameMode === "daily") {
+    if (dailyCompleted) {
+      sentenceEl.textContent = "You completed today's Daily Challenge! Come back tomorrow.";
+      inputEl.disabled = true;
+      submitBtn.disabled = true;
+      roundBadge.textContent = "Daily Finished";
+      return;
+    }
+
+    if (dailyRoundIndex >= 5) {
+      dailyCompleted = true;
+      localStorage.setItem(`glotle_daily_${todayKey}`, "true");
+      sentenceEl.textContent = `Daily Challenge Complete! Your Score: ${dailyScore}/5`;
+      inputEl.disabled = true;
+      submitBtn.disabled = true;
+      roundBadge.textContent = "Daily Complete 🎉";
+      
+      if (typeof confetti === "function") {
+        confetti({ particleCount: 150, spread: 90, origin: { y: 0.5 } });
+      }
+      return;
+    }
+
+    // Daily Deterministic Order
+    currentRound = database[dailyRoundIndex % database.length];
+    roundBadge.textContent = `Daily Challenge (${dailyRoundIndex + 1}/5)`;
+    dailyRoundIndex++;
+  } else {
+    inputEl.disabled = false;
+    submitBtn.disabled = false;
+    roundBadge.textContent = "Endless Language Challenge";
+    const randomIndex = Math.floor(Math.random() * database.length);
+    currentRound = database[randomIndex];
+  }
+
   sentenceEl.textContent = `"${currentRound.text}"`;
   feedbackEl.textContent = "";
 }
@@ -164,34 +230,74 @@ function triggerFlash(className) {
   setTimeout(() => { flashOverlay.className = ""; }, 200);
 }
 
-// Share Score & Game Link to Clipboard
+function saveStats() {
+  localStorage.setItem("glotle_user_stats", JSON.stringify(userStats));
+}
+
+// Modal View Controls
+statsModalBtn.addEventListener("click", () => {
+  document.getElementById("stat-played").textContent = userStats.played;
+  const winPercent = userStats.played > 0 ? Math.round((userStats.wins / userStats.played) * 100) : 0;
+  document.getElementById("stat-winrate").textContent = `${winPercent}%`;
+  document.getElementById("stat-curr-streak").textContent = userStats.currStreak;
+  document.getElementById("stat-best-streak").textContent = userStats.bestStreak;
+  
+  statsModal.classList.remove("hidden");
+});
+
+closeModalBtn.addEventListener("click", () => {
+  statsModal.classList.add("hidden");
+});
+
+// Share Button
 shareBtn.addEventListener("click", () => {
   const gameUrl = "https://kicsi11.github.io/Geography-Game/";
-  const shareText = `🌐 Glotle Score\nStreak: ${streak} 🔥\nBest Streak: ${bestStreak} 🏆\nPlay here: ${gameUrl}`;
-  
+  let shareText = "";
+
+  if (gameMode === "daily") {
+    shareText = `🌐 Glotle Daily Challenge (${todayKey})\nScore: ${dailyScore}/5 🎯\nPlay here: ${gameUrl}`;
+  } else {
+    shareText = `🌐 Glotle Score\nStreak: ${streak} 🔥\nBest Streak: ${bestStreak} 🏆\nPlay here: ${gameUrl}`;
+  }
+
   if (navigator.clipboard && window.isSecureContext) {
     navigator.clipboard.writeText(shareText).then(() => {
-      alert("Score and game link copied to clipboard!");
+      alert("Score copied to clipboard!");
     });
   } else {
-    // Fallback for non-HTTPS environments
     const tempInput = document.createElement("textarea");
     tempInput.value = shareText;
     document.body.appendChild(tempInput);
     tempInput.select();
     document.execCommand("copy");
     document.body.removeChild(tempInput);
-    alert("Score and game link copied to clipboard!");
+    alert("Score copied to clipboard!");
   }
 });
 
 submitBtn.addEventListener("click", makeGuess);
 
-// View Switching
+// Nav & Mode Switching
 document.getElementById("nav-game-btn").addEventListener("click", (e) => {
+  gameMode = "endless";
+  modeLabel.textContent = "Endless Streak";
+  streakEl.innerHTML = `${streak} <span class="fire-icon">🔥</span>`;
   showView("game-view");
   setActiveNav(e.target);
+  loadNextRound();
 });
+
+document.getElementById("nav-daily-btn").addEventListener("click", (e) => {
+  gameMode = "daily";
+  dailyRoundIndex = 0;
+  dailyScore = 0;
+  modeLabel.textContent = "Daily Progress";
+  streakEl.innerHTML = `${dailyScore}/5 🎯`;
+  showView("game-view");
+  setActiveNav(e.target);
+  loadNextRound();
+});
+
 document.getElementById("nav-about-btn").addEventListener("click", (e) => {
   showView("about-view");
   setActiveNav(e.target);
