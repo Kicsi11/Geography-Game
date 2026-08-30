@@ -20,11 +20,9 @@
         <h1>Glotle</h1>
       </div>
       <nav>
-        <button id="nav-game-btn" class="nav-btn active">Endless</button>
-        <button id="nav-daily-btn" class="nav-btn">Daily Challenge 📅</button>
-        <button id="stats-modal-btn" class="icon-btn" title="Statistics">📊</button>
+        <button id="nav-game-btn" class="nav-btn active">Play</button>
+        <button id="stats-modal-btn" class="icon-btn" title="Stats & Settings">⚙️ Stats & Settings</button>
         <button id="nav-about-btn" class="nav-btn">About & Legal</button>
-        <button id="theme-toggle" class="icon-btn" title="Toggle Theme">🌙</button>
       </nav>
     </div>
   </header>
@@ -37,7 +35,7 @@
     <section id="game-view" class="view">
       <div class="stats-card">
         <div class="stat-item">
-          <span class="stat-label" id="mode-label">Endless Streak</span>
+          <span class="stat-label">Current Streak</span>
           <span class="stat-value" id="streak-count">0 <span class="fire-icon">🔥</span></span>
         </div>
         <div class="stat-divider"></div>
@@ -51,7 +49,7 @@
 
       <div class="card game-card">
         <div class="card-header">
-          <span class="badge" id="round-badge">Round Language Challenge</span>
+          <span class="badge">Round Language Challenge</span>
         </div>
         
         <blockquote id="sentence-prompt">"Loading sentence..."</blockquote>
@@ -78,7 +76,6 @@
         <h2>Privacy Policy</h2>
         <p>This site uses Google AdSense to serve advertisements. Google uses cookies to serve ads based on a user's prior visits to this website or other websites.</p>
         <p>Google's use of advertising cookies enables it and its partners to serve ads to users based on their visit to your sites and/or other sites on the Internet.</p>
-        <p>Users may opt out of personalized advertising by visiting Google Advertising Settings.</p>
 
         <hr class="divider">
 
@@ -96,22 +93,18 @@
   <div id="stats-modal" class="modal-overlay hidden">
     <div class="modal-card">
       <div class="modal-header">
-        <h2>Your Statistics 📊</h2>
+        <h2>Statistics 📊</h2>
         <button id="close-modal-btn" class="close-btn">&times;</button>
       </div>
       <div class="modal-body">
         <div class="stats-grid">
           <div class="stat-box">
-            <span class="stat-number" id="stat-played">0</span>
-            <span class="stat-sub">Played</span>
+            <span class="stat-number" id="stat-guesses">0</span>
+            <span class="stat-sub">Guesses</span>
           </div>
           <div class="stat-box">
-            <span class="stat-number" id="stat-winrate">0%</span>
-            <span class="stat-sub">Win %</span>
-          </div>
-          <div class="stat-box">
-            <span class="stat-number" id="stat-curr-streak">0</span>
-            <span class="stat-sub">Current Streak</span>
+            <span class="stat-number" id="stat-accuracy">0%</span>
+            <span class="stat-sub">Accuracy</span>
           </div>
           <div class="stat-box">
             <span class="stat-number" id="stat-best-streak">0</span>
@@ -121,20 +114,11 @@
 
         <hr class="divider">
 
-        <h3>Global Daily Challenge Averages 🌍</h3>
-        <p class="stats-desc">See how you stack up against worldwide daily players today:</p>
-        <div class="global-stats-list">
-          <div class="global-stat-row">
-            <span>Average Score Today:</span>
-            <strong>3.8 / 5</strong>
-          </div>
-          <div class="global-stat-row">
-            <span>Global Win Rate Today:</span>
-            <strong>76%</strong>
-          </div>
-          <div class="global-stat-row">
-            <span>Hardest Language Today:</span>
-            <strong>Romansh</strong>
+        <h3>Settings ⚙️</h3>
+        <div class="settings-list">
+          <div class="setting-row">
+            <span>Dark Theme</span>
+            <button id="theme-toggle" class="setting-toggle-btn">🌙 Dark Mode</button>
           </div>
         </div>
       </div>
