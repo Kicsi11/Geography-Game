@@ -250,8 +250,11 @@ settingsOpenBtn.addEventListener("click", () => {
   const accuracy = userStats.guesses > 0 ? Math.round((userStats.correctGuesses / userStats.guesses) * 100) : 0;
   document.getElementById("stat-accuracy").textContent = `${accuracy}%`;
   
-  // Show overall highest streak in stats
-  document.getElementById("stat-best-streak").textContent = userStats.overallBestStreak;
+  // Dynamically calculate the highest streak across all saved region data
+  const regionBests = Object.values(regionalStreaks).map(region => region.best || 0);
+  const maxStreak = Math.max(0, userStats.overallBestStreak || 0, ...regionBests);
+  
+  document.getElementById("stat-best-streak").textContent = maxStreak;
   
   settingsModal.classList.remove("hidden");
 });
