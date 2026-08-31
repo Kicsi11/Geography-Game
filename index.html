@@ -1,184 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Glotle - Language Identification Game</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <!-- Canvas Confetti Library -->
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Glotle - Language Guessing Game</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js" defer></script>
+  <script src="app.js" defer></script>
 </head>
 <body>
   <div id="flash-overlay"></div>
 
-  <header>
-    <div class="header-container">
-      <div class="logo">
-        <svg class="logo-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10"></circle>
-          <line x1="2" y1="12" x2="22" y2="12"></line>
-          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-        </svg>
-        <h1>Glotle</h1>
-      </div>
-      <nav>
-        <button id="stats-modal-btn" class="icon-btn" title="Settings and Statistics" aria-label="Settings and Statistics">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="3"></circle>
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-          </svg>
-        </button>
-      </nav>
+  <header class="app-header">
+    <h1 class="logo">Glotle</h1>
+    <div class="header-actions">
+      <button id="theme-toggle" class="icon-btn">Dark Mode</button>
+      <button id="stats-modal-btn" class="icon-btn">Stats</button>
     </div>
   </header>
 
-  <!-- Top Ad Banner Placeholder for Google AdSense -->
-  <div class="ad-container top-ad">
-    <div class="ad-placeholder">Advertisement Space</div>
-  </div>
-
-  <main>
-    <!-- Main Game View -->
+  <main class="container">
+    <!-- Game View -->
     <section id="game-view" class="view">
-      <div class="stats-card">
-        <div class="stat-item">
-          <span class="stat-label">Current Streak</span>
-          <span class="stat-value">
-            <svg class="ui-icon icon-fire" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3.5z"></path>
-            </svg>
-            <span id="streak-count">0</span>
-          </span>
-        </div>
-        <div class="stat-divider"></div>
-        <div class="stat-item">
-          <span class="stat-label">Best Streak</span>
-          <span class="stat-value">
-            <svg class="ui-icon icon-trophy" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
-              <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
-              <path d="M4 22h16"></path>
-              <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path>
-              <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path>
-              <path d="M18 2H6v7a6 6 0 0 0 12 0V2z"></path>
-            </svg>
-            <span id="best-streak">0</span>
-          </span>
-        </div>
-        <div class="stat-divider"></div>
-        <button id="share-btn" class="share-btn" title="Share score">
-          <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="18" cy="5" r="3"></circle>
-            <circle cx="6" cy="12" r="3"></circle>
-            <circle cx="18" cy="19" r="3"></circle>
-            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
-            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
-          </svg>
-          Share
-        </button>
+      <div class="selector-row">
+        <label for="region-select">Region:</label>
+        <select id="region-select" class="dropdown">
+          <option value="Europe" selected>Europe</option>
+          <option value="Africa">Africa</option>
+          <option value="Asia">Asia</option>
+          <option value="Americas and Pacific">Americas and Pacific</option>
+          <option value="World">World</option>
+        </select>
       </div>
 
-      <div class="card game-card">
-        <div class="card-header">
-          <span class="badge">Language Identification</span>
-        </div>
-        
-        <blockquote id="sentence-prompt">"Loading sentence..."</blockquote>
-        
-        <div id="feedback-msg" class="feedback-msg"></div>
-
-        <div class="guess-form">
-          <div class="autocomplete-wrapper">
-            <input type="text" id="language-input" placeholder="Type a language (e.g. Romanian, Romani)..." autocomplete="off">
-            <ul id="suggestions-list" class="suggestions-list"></ul>
-          </div>
-          <button id="submit-btn">Submit</button>
-        </div>
+      <div class="streak-bar">
+        <span>Streak: <strong id="streak-count">0</strong></span>
+        <span>Best: <strong id="best-streak">0</strong></span>
       </div>
+
+      <div class="card">
+        <p id="sentence-prompt" class="sentence">Loading sentence...</p>
+      </div>
+
+      <div class="input-container">
+        <input type="text" id="language-input" placeholder="Type a language..." autocomplete="off" />
+        <ul id="suggestions-list" class="suggestions-box"></ul>
+      </div>
+
+      <button id="submit-btn" class="primary-btn">Submit Guess</button>
+      <p id="feedback-msg" class="feedback"></p>
     </section>
 
-    <!-- About & Legal View -->
+    <!-- About View -->
     <section id="about-view" class="view hidden">
-      <div class="card content-card">
-        <div class="about-card-header">
-          <button id="back-to-game-btn" class="icon-btn text-btn">
-            <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="19" y1="12" x2="5" y2="12"></line>
-              <polyline points="12 19 5 12 12 5"></polyline>
-            </svg>
-            Back to Game
-          </button>
-        </div>
-        <h2>About Glotle</h2>
-        <p>Glotle is a language identification game designed to test your knowledge of world languages, scripts, and orthographies.</p>
-        
-        <hr class="divider">
-
-        <h2>Privacy Policy</h2>
-        <p>This site uses Google AdSense to serve advertisements. Google uses cookies to serve ads based on prior visits to this website or other websites.</p>
-        <p>Google's use of advertising cookies enables it and its partners to serve ads based on user visits to this site and/or other sites on the Internet.</p>
-
-        <hr class="divider">
-
-        <h2>Terms of Service</h2>
-        <p>Glotle is provided for educational and entertainment purposes. By using this website, you agree to use it responsibly and in accordance with applicable laws.</p>
-
-        <hr class="divider">
-
-        <h2>Contact</h2>
-        <p>For inquiries, support, or feedback, please contact: <strong>contact@glotle-game.com</strong></p>
-      </div>
+      <h2>About Glotle</h2>
+      <p>Test your linguistic knowledge by identifying sentences from around the world!</p>
+      <button id="back-to-game-btn" class="primary-btn">Back to Game</button>
     </section>
   </main>
 
-  <!-- Stats & Settings Modal -->
-  <div id="stats-modal" class="modal-overlay hidden">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h2>Statistics &amp; Settings</h2>
-        <button id="close-modal-btn" class="close-btn" aria-label="Close modal">&times;</button>
+  <!-- Stats Modal -->
+  <div id="stats-modal" class="modal hidden">
+    <div class="modal-content">
+      <button id="close-modal-btn" class="close-btn">&times;</button>
+      <h2>Statistics</h2>
+      <div class="stats-grid">
+        <div class="stat-box">
+          <span id="stat-guesses" class="stat-num">0</span>
+          <span class="stat-label">Played</span>
+        </div>
+        <div class="stat-box">
+          <span id="stat-accuracy" class="stat-num">0%</span>
+          <span class="stat-label">Accuracy</span>
+        </div>
+        <div class="stat-box">
+          <span id="stat-best-streak" class="stat-num">0</span>
+          <span class="stat-label">Best Streak</span>
+        </div>
       </div>
-      <div class="modal-body">
-        <div class="stats-grid">
-          <div class="stat-box">
-            <span class="stat-number" id="stat-guesses">0</span>
-            <span class="stat-sub">Guesses</span>
-          </div>
-          <div class="stat-box">
-            <span class="stat-number" id="stat-accuracy">0%</span>
-            <span class="stat-sub">Accuracy</span>
-          </div>
-          <div class="stat-box">
-            <span class="stat-number" id="stat-best-streak">0</span>
-            <span class="stat-sub">Best Streak</span>
-          </div>
-        </div>
-
-        <hr class="divider">
-
-        <h3>Preferences</h3>
-        <div class="settings-list">
-          <div class="setting-row">
-            <span>Dark Theme</span>
-            <button id="theme-toggle" class="setting-toggle-btn">Dark Mode</button>
-          </div>
-          <div class="setting-row setting-row-spaced">
-            <span>Information</span>
-            <button id="modal-about-btn" class="setting-toggle-btn">About &amp; Legal</button>
-          </div>
-        </div>
+      <div class="modal-actions">
+        <button id="share-btn" class="primary-btn">Share Score</button>
+        <button id="modal-about-btn" class="secondary-btn">About</button>
       </div>
     </div>
   </div>
-
-  <!-- Bottom Ad Banner Placeholder for Google AdSense -->
-  <div class="ad-container bottom-ad">
-    <div class="ad-placeholder">Advertisement Space</div>
-  </div>
-
-  <script src="app.js"></script>
 </body>
 </html>
