@@ -10,12 +10,18 @@ const allLanguages = [
   "Turkish", "Ukrainian", "Urdu", "Vietnamese", "Welsh"
 ];
 
+// Local Storage Keys
+const LOCAL_STORAGE_KEY_LEADERBOARD = 'glotle_leaderboard';
+const LOCAL_STORAGE_KEY_USERNAME = 'glotle_username';
+
+// Game State
 let database = [];
 let currentRound = null;
 let streak = 0;
 let bestStreak = parseInt(localStorage.getItem("glotle_best")) || 0;
 let selectedSuggestionIndex = -1;
 let currentRegion = "Europe";
+let playerUsername = localStorage.getItem(LOCAL_STORAGE_KEY_USERNAME) || '';
 
 let userStats = JSON.parse(localStorage.getItem("glotle_user_stats")) || {
   guesses: 0,
@@ -36,6 +42,12 @@ const shareBtn = document.getElementById("share-btn");
 const regionSelect = document.getElementById("region-select");
 const logoBtn = document.getElementById("logo-btn");
 
+// Account & Leaderboard DOM Elements
+const usernameInput = document.getElementById('username-input');
+const saveUsernameBtn = document.getElementById('save-username-btn');
+const leaderboardList = document.getElementById('leaderboard-list');
+const userRankDisplay = document.getElementById('user-rank-display');
+
 // Modal & Settings Controls
 const settingsOpenBtn = document.getElementById("settings-open-btn");
 const settingsModal = document.getElementById("settings-modal");
@@ -45,7 +57,7 @@ const infoLinkBtns = document.querySelectorAll(".info-link-btn");
 
 bestStreakEl.textContent = bestStreak;
 
-// Logo Interactive Fast Spin Effect
+// Fast Spin Logo Effect
 if (logoBtn) {
   logoBtn.addEventListener("click", () => {
     const globe = logoBtn.querySelector(".globe-icon");
@@ -58,7 +70,7 @@ if (logoBtn) {
   });
 }
 
-// Fetch JSON Database
+// Fetch Sentence Database
 async function initDatabase() {
   try {
     const response = await fetch("database.json");
@@ -80,7 +92,7 @@ if (regionSelect) {
   });
 }
 
-// Autocomplete Handling
+// Autocomplete Input Handling
 inputEl.addEventListener("input", () => {
   const query = inputEl.value.trim().toLowerCase();
   suggestionsEl.innerHTML = "";
@@ -144,7 +156,7 @@ document.addEventListener("click", (e) => {
   if (e.target !== inputEl) suggestionsEl.innerHTML = "";
 });
 
-// Game Core
+// Game Core Logic
 function makeGuess() {
   const userGuess = inputEl.value.trim();
   if (!userGuess || !currentRound) return;
@@ -164,6 +176,7 @@ function makeGuess() {
       bestStreak = streak;
       localStorage.setItem("glotle_best", bestStreak);
       bestStreakEl.textContent = bestStreak;
+      updateLeaderboardScore(bestStreak);
     }
 
     if (streak > userStats.bestStreak) {
@@ -212,13 +225,123 @@ function saveStats() {
   localStorage.setItem("glotle_user_stats", JSON.stringify(userStats));
 }
 
-// Unified Modal & Navigation Controls
+// Leaderboard & Account Storage Logic
+function getLeaderboard() {
+  const stored = localStorage.getItem(LOCAL_STORAGE_KEY_LEADERBOARD);
+  if (stored) {
+    return JSON.parse(stored);
+  }
+  
+  const defaultBoard = [
+    { name: "LinguistPro", streak: 42 },
+    { name: "PolyglotMaster", streak: 35 },
+    { name: "WordSmith", streak: 28 },
+    { name: "AtlasMapper", streak: 21 },
+    { name: "GlobalGuesser", streak: 18 }
+  ];
+  localStorage.setItem(LOCAL_STORAGE_KEY_LEADERBOARD, JSON.stringify(defaultBoard));
+  return defaultBoard;
+}
+
+function updateLeaderboardScore(newStreak) {
+  if (newStreak <= 0) return;
+
+  let leaderboard = getLeaderboard();
+  const nameToUse = playerUsername.trim() || 'Anonymous Player';
+
+  const existingIndex = leaderboard.findIndex(
+    entry => entry.name.toLowerCase() === nameToUse.toLowerCase()
+  );
+
+  if (existingIndex !== -1) {
+    if (newStreak > leaderboard[existingIndex].streak) {
+      leaderboard[existingIndex].streak = newStreak;
+    }
+  } else {
+    leaderboard.push({ name: nameToUse, streak: newStreak });
+  }
+
+  leaderboard.sort((a, b) => b.streak - a.streak);
+  leaderboard = leaderboard.slice(0, 100);
+
+  localStorage.setItem(LOCAL_STORAGE_KEY_LEADERBOARD, JSON.stringify(leaderboard));
+  renderLeaderboard();
+}
+
+function renderLeaderboard() {
+  if (!leaderboardList) return;
+
+  const leaderboard = getLeaderboard();
+  const nameToUse = playerUsername.trim() || 'Anonymous Player';
+
+  leaderboardList.innerHTML = '';
+  let userRank = -1;
+
+  leaderboard.forEach((entry, index) => {
+    const rank = index + 1;
+    const isCurrentUser = entry.name.toLowerCase() === nameToUse.toLowerCase();
+    if (isCurrentUser) userRank = rank;
+
+    let rankClass = '';
+    if (rank === 1) rankClass = 'gold';
+    else if (rank === 2) rankClass = 'silver';
+    else if (rank === 3) rankClass = 'bronze';
+
+    const li = document.createElement('li');
+    li.className = `leaderboard-item ${rankClass} ${isCurrentUser ? 'current-player' : ''}`;
+    li.innerHTML = `
+      <span class="rank">#${rank}</span>
+      <span class="player-name">${escapeHTML(entry.name)} ${isCurrentUser ? '<span class="you-tag">(You)</span>' : ''}</span>
+      <span class="score-val">${entry.streak} Streak</span>
+    `;
+    leaderboardList.appendChild(li);
+  });
+
+  if (userRankDisplay) {
+    if (userRank !== -1) {
+      userRankDisplay.textContent = `Your Rank: #${userRank} of ${leaderboard.length}`;
+    } else if (bestStreak > 0) {
+      userRankDisplay.textContent = `Your Rank: Unranked (Cutoff is ${leaderboard[leaderboard.length - 1]?.streak || 1})`;
+    } else {
+      userRankDisplay.textContent = `Your Rank: Unranked`;
+    }
+  }
+}
+
+function escapeHTML(str) {
+  return str.replace(/[&<>'"]/g, 
+    tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+  );
+}
+
+// Save Username Event Listener
+if (usernameInput && saveUsernameBtn) {
+  usernameInput.value = playerUsername;
+
+  saveUsernameBtn.addEventListener('click', () => {
+    const newName = usernameInput.value.trim();
+    if (newName) {
+      playerUsername = newName;
+      localStorage.setItem(LOCAL_STORAGE_KEY_USERNAME, playerUsername);
+      if (bestStreak > 0) {
+        updateLeaderboardScore(bestStreak);
+      } else {
+        renderLeaderboard();
+      }
+      saveUsernameBtn.textContent = 'Saved!';
+      setTimeout(() => saveUsernameBtn.textContent = 'Save', 1500);
+    }
+  });
+}
+
+// Navigation & Modal Controls
 settingsOpenBtn.addEventListener("click", () => {
   document.getElementById("stat-guesses").textContent = userStats.guesses;
   const accuracy = userStats.guesses > 0 ? Math.round((userStats.correctGuesses / userStats.guesses) * 100) : 0;
   document.getElementById("stat-accuracy").textContent = `${accuracy}%`;
   document.getElementById("stat-best-streak").textContent = bestStreak;
   
+  renderLeaderboard();
   settingsModal.classList.remove("hidden");
 });
 
@@ -252,3 +375,6 @@ shareBtn.addEventListener("click", () => {
 });
 
 submitBtn.addEventListener("click", makeGuess);
+
+// Initial Leaderboard Load
+renderLeaderboard();
