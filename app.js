@@ -243,12 +243,20 @@ function getLeaderboard() {
   return defaultBoard;
 }
 
-function updateLeaderboardScore(newStreak) {
-  if (newStreak <= 0) return;
+function updateLeaderboardScore(newStreak, previousName = null) {
+  if (newStreak <= 0 && !previousName) return;
 
   let leaderboard = getLeaderboard();
   const nameToUse = playerUsername.trim() || 'Anonymous Player';
 
+  // 1. Clear out old username record if name changed
+  if (previousName && previousName.toLowerCase() !== nameToUse.toLowerCase()) {
+    leaderboard = leaderboard.filter(
+      entry => entry.name.toLowerCase() !== previousName.toLowerCase()
+    );
+  }
+
+  // 2. Check if new active name already exists
   const existingIndex = leaderboard.findIndex(
     entry => entry.name.toLowerCase() === nameToUse.toLowerCase()
   );
@@ -257,10 +265,11 @@ function updateLeaderboardScore(newStreak) {
     if (newStreak > leaderboard[existingIndex].streak) {
       leaderboard[existingIndex].streak = newStreak;
     }
-  } else {
+  } else if (newStreak > 0) {
     leaderboard.push({ name: nameToUse, streak: newStreak });
   }
 
+  // 3. Keep top 100 ordered by streak length
   leaderboard.sort((a, b) => b.streak - a.streak);
   leaderboard = leaderboard.slice(0, 100);
 
@@ -319,15 +328,16 @@ if (usernameInput && saveUsernameBtn) {
   usernameInput.value = playerUsername;
 
   saveUsernameBtn.addEventListener('click', () => {
+    const oldName = playerUsername;
     const newName = usernameInput.value.trim();
+
     if (newName) {
       playerUsername = newName;
       localStorage.setItem(LOCAL_STORAGE_KEY_USERNAME, playerUsername);
-      if (bestStreak > 0) {
-        updateLeaderboardScore(bestStreak);
-      } else {
-        renderLeaderboard();
-      }
+
+      // Pass oldName to remove old entry from leaderboard
+      updateLeaderboardScore(bestStreak, oldName);
+
       saveUsernameBtn.textContent = 'Saved!';
       setTimeout(() => saveUsernameBtn.textContent = 'Save', 1500);
     }
