@@ -10,18 +10,6 @@ const allLanguages = [
   "Turkish", "Ukrainian", "Urdu", "Vietnamese", "Welsh"
 ];
 
-// Local Storage Keys
-const LOCAL_STORAGE_KEY_LEADERBOARD = 'glotle_leaderboard';
-const LOCAL_STORAGE_KEY_USERNAME = 'glotle_username';
-const LOCAL_STORAGE_KEY_USER_ID = 'glotle_user_id';
-
-// Unique Player Identifier (prevents hijacking/overwriting scores)
-let userId = localStorage.getItem(LOCAL_STORAGE_KEY_USER_ID);
-if (!userId) {
-  userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-  localStorage.setItem(LOCAL_STORAGE_KEY_USER_ID, userId);
-}
-
 // Game State
 let database = [];
 let currentRound = null;
@@ -29,7 +17,6 @@ let streak = 0;
 let bestStreak = parseInt(localStorage.getItem("glotle_best")) || 0;
 let selectedSuggestionIndex = -1;
 let currentRegion = "Europe";
-let playerUsername = localStorage.getItem(LOCAL_STORAGE_KEY_USERNAME) || '';
 
 let userStats = JSON.parse(localStorage.getItem("glotle_user_stats")) || {
   guesses: 0,
@@ -50,13 +37,7 @@ const shareBtn = document.getElementById("share-btn");
 const regionSelect = document.getElementById("region-select");
 const logoBtn = document.getElementById("logo-btn");
 
-// Account & Leaderboard DOM Elements
-const usernameInput = document.getElementById('username-input');
-const saveUsernameBtn = document.getElementById('save-username-btn');
-const leaderboardList = document.getElementById('leaderboard-list');
-const userRankDisplay = document.getElementById('user-rank-display');
-
-// Modal & Settings Controls
+// Modal Controls
 const settingsOpenBtn = document.getElementById("settings-open-btn");
 const settingsModal = document.getElementById("settings-modal");
 const closeModalBtn = document.getElementById("close-modal-btn");
@@ -184,7 +165,6 @@ function makeGuess() {
       bestStreak = streak;
       localStorage.setItem("glotle_best", bestStreak);
       bestStreakEl.textContent = bestStreak;
-      updateLeaderboardScore(bestStreak);
     }
 
     if (streak > userStats.bestStreak) {
@@ -233,123 +213,6 @@ function saveStats() {
   localStorage.setItem("glotle_user_stats", JSON.stringify(userStats));
 }
 
-// Leaderboard & Account Storage Logic
-function getLeaderboard() {
-  const stored = localStorage.getItem(LOCAL_STORAGE_KEY_LEADERBOARD);
-  if (stored) {
-    return JSON.parse(stored);
-  }
-  
-  const defaultBoard = [
-    { id: "def_1", name: "LinguistPro", streak: 42 },
-    { id: "def_2", name: "PolyglotMaster", streak: 35 },
-    { id: "def_3", name: "WordSmith", streak: 28 },
-    { id: "def_4", name: "AtlasMapper", streak: 21 },
-    { id: "def_5", name: "GlobalGuesser", streak: 18 }
-  ];
-  localStorage.setItem(LOCAL_STORAGE_KEY_LEADERBOARD, JSON.stringify(defaultBoard));
-  return defaultBoard;
-}
-
-function updateLeaderboardScore(newStreak) {
-  let leaderboard = getLeaderboard();
-  const nameToUse = playerUsername.trim() || 'Anonymous Player';
-
-  // Search by unique player ID instead of name
-  const existingIndex = leaderboard.findIndex(entry => entry.id === userId);
-
-  if (existingIndex !== -1) {
-    leaderboard[existingIndex].name = nameToUse;
-    if (newStreak > leaderboard[existingIndex].streak) {
-      leaderboard[existingIndex].streak = newStreak;
-    }
-  } else if (newStreak > 0) {
-    leaderboard.push({ id: userId, name: nameToUse, streak: newStreak });
-  }
-
-  // Sort descending and cap at top 1000
-  leaderboard.sort((a, b) => b.streak - a.streak);
-  leaderboard = leaderboard.slice(0, 1000);
-
-  localStorage.setItem(LOCAL_STORAGE_KEY_LEADERBOARD, JSON.stringify(leaderboard));
-  renderLeaderboard();
-}
-
-function renderLeaderboard() {
-  if (!leaderboardList) return;
-
-  const leaderboard = getLeaderboard();
-  leaderboardList.innerHTML = '';
-  let userRank = -1;
-
-  leaderboard.forEach((entry, index) => {
-    const rank = index + 1;
-    const isCurrentUser = entry.id === userId;
-    if (isCurrentUser) userRank = rank;
-
-    let rankClass = '';
-    if (rank === 1) rankClass = 'gold';
-    else if (rank === 2) rankClass = 'silver';
-    else if (rank === 3) rankClass = 'bronze';
-
-    const li = document.createElement('li');
-    li.className = `leaderboard-item ${rankClass} ${isCurrentUser ? 'current-player' : ''}`;
-    li.innerHTML = `
-      <span class="rank">#${rank}</span>
-      <span class="player-name">${escapeHTML(entry.name)} ${isCurrentUser ? '<span class="you-tag">(You)</span>' : ''}</span>
-      <span class="score-val">${entry.streak} Streak</span>
-    `;
-    leaderboardList.appendChild(li);
-  });
-
-  if (userRankDisplay) {
-    if (userRank !== -1) {
-      userRankDisplay.textContent = `Your Rank: #${userRank} of ${leaderboard.length}`;
-    } else if (bestStreak > 0) {
-      userRankDisplay.textContent = `Your Rank: Unranked (Cutoff is ${leaderboard[leaderboard.length - 1]?.streak || 1})`;
-    } else {
-      userRankDisplay.textContent = `Your Rank: Unranked`;
-    }
-  }
-}
-
-function escapeHTML(str) {
-  return str.replace(/[&<>'"]/g, 
-    tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
-  );
-}
-
-// Save Username Event Listener (with name protection)
-if (usernameInput && saveUsernameBtn) {
-  usernameInput.value = playerUsername;
-
-  saveUsernameBtn.addEventListener('click', () => {
-    const newName = usernameInput.value.trim();
-
-    if (!newName) return;
-
-    const leaderboard = getLeaderboard();
-
-    // Check if the requested name is taken by another player ID
-    const isNameTaken = leaderboard.some(
-      entry => entry.name.toLowerCase() === newName.toLowerCase() && entry.id !== userId
-    );
-
-    if (isNameTaken) {
-      alert(`The name "${newName}" is already taken by another player on the leaderboard!`);
-      return;
-    }
-
-    playerUsername = newName;
-    localStorage.setItem(LOCAL_STORAGE_KEY_USERNAME, playerUsername);
-
-    updateLeaderboardScore(bestStreak);
-
-    saveUsernameBtn.textContent = 'Saved!';
-    setTimeout(() => saveUsernameBtn.textContent = 'Save', 1500);
-  });
-}
-
 // Navigation & Modal Controls
 settingsOpenBtn.addEventListener("click", () => {
   document.getElementById("stat-guesses").textContent = userStats.guesses;
@@ -357,7 +220,6 @@ settingsOpenBtn.addEventListener("click", () => {
   document.getElementById("stat-accuracy").textContent = `${accuracy}%`;
   document.getElementById("stat-best-streak").textContent = bestStreak;
   
-  renderLeaderboard();
   settingsModal.classList.remove("hidden");
 });
 
@@ -405,6 +267,3 @@ shareBtn.addEventListener("click", async () => {
 });
 
 submitBtn.addEventListener("click", makeGuess);
-
-// Initial Leaderboard Load
-renderLeaderboard();
