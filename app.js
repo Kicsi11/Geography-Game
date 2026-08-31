@@ -32,9 +32,9 @@ const feedbackEl = document.getElementById("feedback-msg");
 const streakEl = document.getElementById("streak-count");
 const bestStreakEl = document.getElementById("best-streak");
 const flashOverlay = document.getElementById("flash-overlay");
-const themeToggleBtn = document.getElementById("theme-toggle");
 const shareBtn = document.getElementById("share-btn");
 const regionSelect = document.getElementById("region-select");
+const logoBtn = document.getElementById("logo-btn");
 
 // Modal & Settings Controls
 const settingsOpenBtn = document.getElementById("settings-open-btn");
@@ -44,6 +44,19 @@ const backToGameBtn = document.getElementById("back-to-game-btn");
 const infoLinkBtns = document.querySelectorAll(".info-link-btn");
 
 bestStreakEl.textContent = bestStreak;
+
+// Logo Interactive Fast Spin Effect
+if (logoBtn) {
+  logoBtn.addEventListener("click", () => {
+    const globe = logoBtn.querySelector(".globe-icon");
+    if (globe && !globe.classList.contains("fast-spin")) {
+      globe.classList.add("fast-spin");
+      setTimeout(() => {
+        globe.classList.remove("fast-spin");
+      }, 1000);
+    }
+  });
+}
 
 // Fetch JSON Database
 async function initDatabase() {
@@ -157,14 +170,14 @@ function makeGuess() {
       userStats.bestStreak = streak;
     }
 
-    feedbackEl.style.color = "var(--accent-green)";
+    feedbackEl.style.color = "#10b981";
     feedbackEl.textContent = "Correct!";
     setTimeout(loadNextRound, 400);
 
   } else {
     triggerFlash("wrong-flash");
     streak = 0;
-    feedbackEl.style.color = "var(--accent-red)";
+    feedbackEl.style.color = "#ef4444";
     feedbackEl.textContent = `Incorrect. The answer was ${currentRound.language}.`;
     setTimeout(loadNextRound, 1000);
   }
@@ -239,10 +252,3 @@ shareBtn.addEventListener("click", () => {
 });
 
 submitBtn.addEventListener("click", makeGuess);
-
-// Dark Mode Toggle
-themeToggleBtn.addEventListener("click", () => {
-  document.body.classList.toggle("dark-theme");
-  const isDark = document.body.classList.contains("dark-theme");
-  themeToggleBtn.textContent = `Dark Mode: ${isDark ? "On" : "Off"}`;
-});
