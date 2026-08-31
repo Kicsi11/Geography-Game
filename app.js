@@ -10,18 +10,25 @@ const allLanguages = [
   "Turkish", "Ukrainian", "Urdu", "Vietnamese", "Welsh"
 ];
 
-// Game State
+// Game State & Local Storage Initialization
 let database = [];
 let currentRound = null;
-let streak = 0;
-let bestStreak = parseInt(localStorage.getItem("glotle_best")) || 0;
 let selectedSuggestionIndex = -1;
 let currentRegion = "Europe";
+
+// Per-region streak tracking
+let regionalStreaks = JSON.parse(localStorage.getItem("glotle_regional_streaks")) || {
+  "Europe": { current: 0, best: 0 },
+  "Africa": { current: 0, best: 0 },
+  "Asia": { current: 0, best: 0 },
+  "Americas and Pacific": { current: 0, best: 0 },
+  "World": { current: 0, best: 0 }
+};
 
 let userStats = JSON.parse(localStorage.getItem("glotle_user_stats")) || {
   guesses: 0,
   correctGuesses: 0,
-  bestStreak: 0
+  overallBestStreak: 0
 };
 
 // DOM Elements
@@ -44,7 +51,19 @@ const closeModalBtn = document.getElementById("close-modal-btn");
 const backToGameBtn = document.getElementById("back-to-game-btn");
 const infoLinkBtns = document.querySelectorAll(".info-link-btn");
 
-bestStreakEl.textContent = bestStreak;
+// Ensure selected region structure exists
+function ensureRegionExists(region) {
+  if (!regionalStreaks[region]) {
+    regionalStreaks[region] = { current: 0, best: 0 };
+  }
+}
+
+// Update streak UI numbers for the current region
+function updateStreakDisplay() {
+  ensureRegionExists(currentRegion);
+  streakEl.textContent = regionalStreaks[currentRegion].current;
+  bestStreakEl.textContent = regionalStreaks[currentRegion].best;
+}
 
 // Fast Spin Logo Effect
 if (logoBtn) {
@@ -64,6 +83,7 @@ async function initDatabase() {
   try {
     const response = await fetch("database.json");
     database = await response.json();
+    updateStreakDisplay();
     loadNextRound();
   } catch (err) {
     sentenceEl.textContent = "Error loading sentence database.";
@@ -73,10 +93,12 @@ async function initDatabase() {
 
 initDatabase();
 
-// Region Selection
+// Region Selection Event
 if (regionSelect) {
+  currentRegion = regionSelect.value;
   regionSelect.addEventListener("change", (e) => {
     currentRegion = e.target.value;
+    updateStreakDisplay();
     loadNextRound();
   });
 }
@@ -150,25 +172,30 @@ function makeGuess() {
   const userGuess = inputEl.value.trim();
   if (!userGuess || !currentRound) return;
 
+  ensureRegionExists(currentRegion);
+  const activeData = regionalStreaks[currentRegion];
+
   userStats.guesses++;
 
   if (userGuess.toLowerCase() === currentRound.language.toLowerCase()) {
     triggerFlash("correct-flash");
-    streak++;
+    
+    // Increment active region streak
+    activeData.current++;
     userStats.correctGuesses++;
 
-    if (streak % 5 === 0 && typeof confetti === "function") {
+    if (activeData.current % 5 === 0 && typeof confetti === "function") {
       confetti({ particleCount: 80, spread: 60, origin: { y: 0.6 } });
     }
 
-    if (streak > bestStreak) {
-      bestStreak = streak;
-      localStorage.setItem("glotle_best", bestStreak);
-      bestStreakEl.textContent = bestStreak;
+    // Update Best Streak for Current Region
+    if (activeData.current > activeData.best) {
+      activeData.best = activeData.current;
     }
 
-    if (streak > userStats.bestStreak) {
-      userStats.bestStreak = streak;
+    // Update Overall Best Streak across all regions
+    if (activeData.best > userStats.overallBestStreak) {
+      userStats.overallBestStreak = activeData.best;
     }
 
     feedbackEl.style.color = "#10b981";
@@ -177,14 +204,17 @@ function makeGuess() {
 
   } else {
     triggerFlash("wrong-flash");
-    streak = 0;
+    
+    // Reset active region streak only
+    activeData.current = 0;
+    
     feedbackEl.style.color = "#ef4444";
     feedbackEl.textContent = `Incorrect. The answer was ${currentRound.language}.`;
     setTimeout(loadNextRound, 1000);
   }
 
-  saveStats();
-  streakEl.textContent = streak;
+  saveData();
+  updateStreakDisplay();
   inputEl.value = "";
   suggestionsEl.innerHTML = "";
 }
@@ -209,7 +239,8 @@ function triggerFlash(className) {
   setTimeout(() => { flashOverlay.className = ""; }, 200);
 }
 
-function saveStats() {
+function saveData() {
+  localStorage.setItem("glotle_regional_streaks", JSON.stringify(regionalStreaks));
   localStorage.setItem("glotle_user_stats", JSON.stringify(userStats));
 }
 
@@ -218,7 +249,9 @@ settingsOpenBtn.addEventListener("click", () => {
   document.getElementById("stat-guesses").textContent = userStats.guesses;
   const accuracy = userStats.guesses > 0 ? Math.round((userStats.correctGuesses / userStats.guesses) * 100) : 0;
   document.getElementById("stat-accuracy").textContent = `${accuracy}%`;
-  document.getElementById("stat-best-streak").textContent = bestStreak;
+  
+  // Show overall highest streak in stats
+  document.getElementById("stat-best-streak").textContent = userStats.overallBestStreak;
   
   settingsModal.classList.remove("hidden");
 });
