@@ -1,0 +1,15 @@
+[
+  { "text": "Acesta este un test în limba română.", "language": "Romanian", "region": "Europe" },
+  { "text": "Nu aduce anul ce aduce ceasul.", "language": "Romanian", "region": "Europe" },
+  { "text": "Le rapide renard brun saute par-dessus le chien paresseux.", "language": "French", "region": "Europe" },
+  { "text": "Der schnelle braune Fuchs springt über den faulen Hund.", "language": "German", "region": "Europe" },
+  
+  { "text": "Habari gani, jambo bwana.", "language": "Swahili", "region": "Africa" },
+  { "text": "Die vinnige bruin vos spring oor die lui hond.", "language": "Afrikaans", "region": "Africa" },
+
+  { "text": "素早い茶色のキツネがのろまな犬を飛び越えます。", "language": "Japanese", "region": "Asia" },
+  { "text": "빠른 갈색 여우가 게으른 개를 뛰어넘습니다.", "language": "Korean", "region": "Asia" },
+
+  { "text": "Kia ora, selamat datang ke dunia modern.", "language": "Maori", "region": "Americas and Pacific" },
+  { "text": "El rápido zorro marrón salta sobre el perro perezoso.", "language": "Spanish", "region": "Americas and Pacific" }
+]
