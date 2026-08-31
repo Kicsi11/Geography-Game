@@ -34,16 +34,13 @@
     </div>
   </header>
 
-  <!-- Top Ad Slot (Header Leaderboard) -->
   <div class="ad-container ad-top">
     <div class="ad-placeholder">
-      <!-- Paste your Google AdSense Top Banner Code Here -->
       <span>Advertisement Slot - Header</span>
     </div>
   </div>
 
   <main class="container">
-    <!-- Game View -->
     <section id="game-view" class="view">
       <div class="selector-row">
         <label for="region-select">Region Pool</label>
@@ -95,15 +92,12 @@
       <p id="feedback-msg" class="feedback"></p>
     </section>
 
-    <!-- Mid-Content Ad Slot -->
     <div class="ad-container ad-inline">
       <div class="ad-placeholder">
-        <!-- Paste your Google AdSense In-Feed / Banner Code Here -->
         <span>Advertisement Slot - Inline</span>
       </div>
     </div>
 
-    <!-- Info View (Google AdSense Requirements) -->
     <section id="info-view" class="view hidden">
       <button id="back-to-game-btn" class="secondary-btn back-btn">&larr; Back to Game</button>
 
@@ -115,7 +109,6 @@
       <article id="privacy-content" class="info-card">
         <h2>Privacy Policy</h2>
         <p>Your privacy is important to us. Glotle processes game statistics and preferences locally on your device via browser LocalStorage. We do not collect or store personal identifiable information on external servers.</p>
-        <p>Third-party vendors, including Google, use cookies to serve ads based on prior visits to our website. You may opt out of personalized advertising by visiting Google Ad Settings.</p>
       </article>
 
       <article id="terms-content" class="info-card">
@@ -130,7 +123,7 @@
     </section>
   </main>
 
-  <!-- Combined Settings & Stats Modal -->
+  <!-- Modal with Leaderboard -->
   <div id="settings-modal" class="modal hidden">
     <div class="modal-content">
       <div class="modal-header">
@@ -154,6 +147,27 @@
             <span class="stat-label">Best Streak</span>
           </div>
         </div>
+      </div>
+
+      <div class="modal-section">
+        <h3>Top High Scores</h3>
+        <ul id="leaderboard-list" class="leaderboard-list">
+          <li class="leaderboard-item gold">
+            <span class="rank">#1</span>
+            <span class="player-name">Player 1</span>
+            <span class="score-val">15 Streak</span>
+          </li>
+          <li class="leaderboard-item silver">
+            <span class="rank">#2</span>
+            <span class="player-name">Player 2</span>
+            <span class="score-val">10 Streak</span>
+          </li>
+          <li class="leaderboard-item bronze">
+            <span class="rank">#3</span>
+            <span class="player-name">Player 3</span>
+            <span class="score-val">7 Streak</span>
+          </li>
+        </ul>
       </div>
 
       <div class="modal-section">
