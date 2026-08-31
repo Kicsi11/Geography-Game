@@ -176,7 +176,7 @@ body {
   -webkit-backdrop-filter: var(--blur-effect);
   border: 1px solid var(--card-border);
   border-radius: 16px;
-  padding: 0.9rem;
+  padding: 1rem 1.25rem;
   margin-bottom: 1.5rem;
   box-shadow: var(--shadow-main);
 }
@@ -185,26 +185,53 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  text-align: center;
+  flex: 1;
+}
+
+.streak-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  margin-bottom: 0.25rem;
+}
+
+.streak-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.flame-icon {
+  stroke: #f97316;
+  filter: drop-shadow(0 0 6px rgba(249, 115, 22, 0.4));
+}
+
+.trophy-icon {
+  stroke: #eab308;
+  filter: drop-shadow(0 0 6px rgba(234, 179, 8, 0.4));
 }
 
 .streak-item .label {
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-weight: 700;
-  margin-bottom: 0.2rem;
+  line-height: 1;
 }
 
 .streak-item .value {
-  font-size: 1.35rem;
+  font-size: 1.4rem;
   font-weight: 800;
+  line-height: 1.2;
 }
 
 .streak-divider {
   width: 1px;
-  height: 28px;
+  height: 32px;
   background: var(--card-border);
+  margin: 0 0.5rem;
 }
 
 /* Main Display Card */
