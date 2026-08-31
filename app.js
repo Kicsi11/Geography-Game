@@ -319,23 +319,34 @@ function escapeHTML(str) {
   );
 }
 
-// Save Username Event Listener
+// Save Username Event Listener (with name protection)
 if (usernameInput && saveUsernameBtn) {
   usernameInput.value = playerUsername;
 
   saveUsernameBtn.addEventListener('click', () => {
     const newName = usernameInput.value.trim();
 
-    if (newName) {
-      playerUsername = newName;
-      localStorage.setItem(LOCAL_STORAGE_KEY_USERNAME, playerUsername);
+    if (!newName) return;
 
-      // Updates active user's display name attached to their ID
-      updateLeaderboardScore(bestStreak);
+    const leaderboard = getLeaderboard();
 
-      saveUsernameBtn.textContent = 'Saved!';
-      setTimeout(() => saveUsernameBtn.textContent = 'Save', 1500);
+    // Check if the requested name is taken by another player ID
+    const isNameTaken = leaderboard.some(
+      entry => entry.name.toLowerCase() === newName.toLowerCase() && entry.id !== userId
+    );
+
+    if (isNameTaken) {
+      alert(`The name "${newName}" is already taken by another player on the leaderboard!`);
+      return;
     }
+
+    playerUsername = newName;
+    localStorage.setItem(LOCAL_STORAGE_KEY_USERNAME, playerUsername);
+
+    updateLeaderboardScore(bestStreak);
+
+    saveUsernameBtn.textContent = 'Saved!';
+    setTimeout(() => saveUsernameBtn.textContent = 'Save', 1500);
   });
 }
 
