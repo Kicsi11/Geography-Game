@@ -497,6 +497,48 @@ input[type="text"]:focus {
   white-space: nowrap;
 }
 
+/* Leaderboard List */
+.leaderboard-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background: rgba(0, 0, 0, 0.15);
+  padding: 0.75rem;
+  border-radius: 14px;
+  border: 1px solid var(--card-border);
+}
+
+.leaderboard-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 0.8rem;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.02);
+  font-size: 0.85rem;
+}
+
+.leaderboard-item .rank {
+  font-weight: 800;
+  width: 28px;
+  color: var(--text-muted);
+}
+
+.leaderboard-item.gold .rank { color: #f59e0b; }
+.leaderboard-item.silver .rank { color: #94a3b8; }
+.leaderboard-item.bronze .rank { color: #b45309; }
+
+.leaderboard-item .player-name {
+  flex: 1;
+  font-weight: 600;
+}
+
+.leaderboard-item .score-val {
+  font-weight: 700;
+  color: var(--text-main);
+}
+
 .info-links {
   display: grid;
   grid-template-columns: 1fr 1fr;
