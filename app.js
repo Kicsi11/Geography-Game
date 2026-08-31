@@ -4,30 +4,19 @@ const allLanguages = [
   "Danish", "Dutch", "English", "Estonian", "Finnish", "French", "Georgian", 
   "German", "Greek", "Hebrew", "Hindi", "Hungarian", "Icelandic", "Indonesian", 
   "Irish", "Italian", "Japanese", "Korean", "Latvian", "Lithuanian", "Macedonian", 
-  "Malay", "Maltese", "Mongolian", "Nepali", "Norwegian", "Persian", "Polish", 
+  "Malay", "Maori", "Maltese", "Mongolian", "Nepali", "Norwegian", "Persian", "Polish", 
   "Portuguese", "Punjabi", "Romani", "Romanian", "Romansh", "Russian", "Serbian", 
   "Slovak", "Slovenian", "Spanish", "Swahili", "Swedish", "Tagalog", "Thai", 
   "Turkish", "Ukrainian", "Urdu", "Vietnamese", "Welsh"
 ];
 
-const database = [
-  { text: "Acesta este un test în limba română.", language: "Romanian" },
-  { text: "Cai si si ek testo andi Romani chib.", language: "Romani" },
-  { text: "Cquest ais un schatg da la lingua rumantscha.", language: "Romansh" },
-  { text: "El rápido zorro marrón salta sobre el perro perezoso.", language: "Spanish" },
-  { text: "Le rapide renard brun saute par-dessus le chien paresseux.", language: "French" },
-  { text: "Der schnelle braune Fuchs springt über den faulen Hund.", language: "German" },
-  { text: "素早い茶色のキツネがのろまな犬を飛び越えます。", language: "Japanese" },
-  { text: "빠른 갈색 여우가 게으른 개를 뛰어넘습니다.", language: "Korean" },
-  { text: "Быстрая коричневая лиса прыгает через ленивую собаку.", language: "Russian" }
-];
-
+let database = [];
 let currentRound = null;
 let streak = 0;
 let bestStreak = parseInt(localStorage.getItem("glotle_best")) || 0;
 let selectedSuggestionIndex = -1;
+let currentRegion = "Europe"; // Default starting region
 
-// Stats Object
 let userStats = JSON.parse(localStorage.getItem("glotle_user_stats")) || {
   guesses: 0,
   correctGuesses: 0,
@@ -45,6 +34,7 @@ const bestStreakEl = document.getElementById("best-streak");
 const flashOverlay = document.getElementById("flash-overlay");
 const themeToggleBtn = document.getElementById("theme-toggle");
 const shareBtn = document.getElementById("share-btn");
+const regionSelect = document.getElementById("region-select");
 
 // Modal & Navigation Elements
 const statsModalBtn = document.getElementById("stats-modal-btn");
@@ -53,11 +43,31 @@ const closeModalBtn = document.getElementById("close-modal-btn");
 const modalAboutBtn = document.getElementById("modal-about-btn");
 const backToGameBtn = document.getElementById("back-to-game-btn");
 
-// Initialize Game
 bestStreakEl.textContent = bestStreak;
-loadNextRound();
 
-// Autocomplete Handling
+// Fetch JSON Database
+async function initDatabase() {
+  try {
+    const response = await fetch("database.json");
+    database = await response.json();
+    loadNextRound();
+  } catch (err) {
+    sentenceEl.textContent = "Error loading sentence database.";
+    console.error(err);
+  }
+}
+
+initDatabase();
+
+// Region Selector
+if (regionSelect) {
+  regionSelect.addEventListener("change", (e) => {
+    currentRegion = e.target.value;
+    loadNextRound();
+  });
+}
+
+// Autocomplete Logic
 inputEl.addEventListener("input", () => {
   const query = inputEl.value.trim().toLowerCase();
   suggestionsEl.innerHTML = "";
@@ -81,7 +91,6 @@ inputEl.addEventListener("input", () => {
   });
 });
 
-// Keyboard Navigation for Autocomplete
 inputEl.addEventListener("keydown", (e) => {
   const items = suggestionsEl.querySelectorAll("li");
   
@@ -122,10 +131,10 @@ document.addEventListener("click", (e) => {
   if (e.target !== inputEl) suggestionsEl.innerHTML = "";
 });
 
-// Handle Guesses
+// Game Core
 function makeGuess() {
   const userGuess = inputEl.value.trim();
-  if (!userGuess) return;
+  if (!userGuess || !currentRound) return;
 
   userStats.guesses++;
 
@@ -167,8 +176,16 @@ function makeGuess() {
 }
 
 function loadNextRound() {
-  const randomIndex = Math.floor(Math.random() * database.length);
-  currentRound = database[randomIndex];
+  if (!database.length) return;
+
+  const filteredPool = currentRegion === "World" 
+    ? database 
+    : database.filter(item => item.region === currentRegion);
+
+  const activePool = filteredPool.length > 0 ? filteredPool : database;
+  const randomIndex = Math.floor(Math.random() * activePool.length);
+  
+  currentRound = activePool[randomIndex];
   sentenceEl.textContent = `"${currentRound.text}"`;
   feedbackEl.textContent = "";
 }
@@ -182,7 +199,7 @@ function saveStats() {
   localStorage.setItem("glotle_user_stats", JSON.stringify(userStats));
 }
 
-// Modal View Controls
+// UI Controls & Navigation
 statsModalBtn.addEventListener("click", () => {
   document.getElementById("stat-guesses").textContent = userStats.guesses;
   const accuracy = userStats.guesses > 0 ? Math.round((userStats.correctGuesses / userStats.guesses) * 100) : 0;
@@ -192,47 +209,31 @@ statsModalBtn.addEventListener("click", () => {
   statsModal.classList.remove("hidden");
 });
 
-closeModalBtn.addEventListener("click", () => {
-  statsModal.classList.add("hidden");
-});
+closeModalBtn.addEventListener("click", () => statsModal.classList.add("hidden"));
 
 modalAboutBtn.addEventListener("click", () => {
   statsModal.classList.add("hidden");
   showView("about-view");
 });
 
-backToGameBtn.addEventListener("click", () => {
-  showView("game-view");
-});
+backToGameBtn.addEventListener("click", () => showView("game-view"));
 
 function showView(viewId) {
   document.querySelectorAll(".view").forEach(v => v.classList.add("hidden"));
   document.getElementById(viewId).classList.remove("hidden");
 }
 
-// Share Button
 shareBtn.addEventListener("click", () => {
-  const gameUrl = window.location.href;
-  const shareText = `Glotle Stats\nCurrent Streak: ${streak}\nBest Streak: ${bestStreak}\n${gameUrl}`;
-
+  const shareText = `Glotle (${currentRegion})\nCurrent Streak: ${streak}\nBest Streak: ${bestStreak}`;
   if (navigator.clipboard && window.isSecureContext) {
-    navigator.clipboard.writeText(shareText).then(() => {
-      alert("Score copied to clipboard!");
-    });
+    navigator.clipboard.writeText(shareText).then(() => alert("Score copied to clipboard!"));
   } else {
-    const tempInput = document.createElement("textarea");
-    tempInput.value = shareText;
-    document.body.appendChild(tempInput);
-    tempInput.select();
-    document.execCommand("copy");
-    document.body.removeChild(tempInput);
-    alert("Score copied to clipboard!");
+    alert(shareText);
   }
 });
 
 submitBtn.addEventListener("click", makeGuess);
 
-// Dark Mode Toggle
 themeToggleBtn.addEventListener("click", () => {
   document.body.classList.toggle("dark-theme");
   const isDark = document.body.classList.contains("dark-theme");
