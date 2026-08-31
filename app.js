@@ -381,12 +381,26 @@ function showView(viewId) {
   document.getElementById(viewId).classList.remove("hidden");
 }
 
-shareBtn.addEventListener("click", () => {
-  const shareText = `Glotle (${currentRegion})\nCurrent Streak: ${streak}\nBest Streak: ${bestStreak}`;
-  if (navigator.clipboard && window.isSecureContext) {
-    navigator.clipboard.writeText(shareText).then(() => alert("Score copied to clipboard!"));
+shareBtn.addEventListener("click", async () => {
+  const shareData = {
+    title: 'Glotle',
+    text: 'Test out your language skills with Glotle!',
+    url: window.location.href
+  };
+
+  if (navigator.share) {
+    try {
+      await navigator.share(shareData);
+    } catch (err) {
+      // User canceled share
+    }
   } else {
-    alert(shareText);
+    const fullMessage = `${shareData.text} ${shareData.url}`;
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(fullMessage).then(() => alert("Link copied to clipboard!"));
+    } else {
+      alert(fullMessage);
+    }
   }
 });
 
