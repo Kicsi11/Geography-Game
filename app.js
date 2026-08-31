@@ -15,7 +15,7 @@ let currentRound = null;
 let streak = 0;
 let bestStreak = parseInt(localStorage.getItem("glotle_best")) || 0;
 let selectedSuggestionIndex = -1;
-let currentRegion = "Europe"; // Default starting region
+let currentRegion = "Europe";
 
 let userStats = JSON.parse(localStorage.getItem("glotle_user_stats")) || {
   guesses: 0,
@@ -36,12 +36,12 @@ const themeToggleBtn = document.getElementById("theme-toggle");
 const shareBtn = document.getElementById("share-btn");
 const regionSelect = document.getElementById("region-select");
 
-// Modal & Navigation Elements
-const statsModalBtn = document.getElementById("stats-modal-btn");
-const statsModal = document.getElementById("stats-modal");
+// Modal & Settings Controls
+const settingsOpenBtn = document.getElementById("settings-open-btn");
+const settingsModal = document.getElementById("settings-modal");
 const closeModalBtn = document.getElementById("close-modal-btn");
-const modalAboutBtn = document.getElementById("modal-about-btn");
 const backToGameBtn = document.getElementById("back-to-game-btn");
+const infoLinkBtns = document.querySelectorAll(".info-link-btn");
 
 bestStreakEl.textContent = bestStreak;
 
@@ -59,7 +59,7 @@ async function initDatabase() {
 
 initDatabase();
 
-// Region Selector
+// Region Selection
 if (regionSelect) {
   regionSelect.addEventListener("change", (e) => {
     currentRegion = e.target.value;
@@ -67,7 +67,7 @@ if (regionSelect) {
   });
 }
 
-// Autocomplete Logic
+// Autocomplete Handling
 inputEl.addEventListener("input", () => {
   const query = inputEl.value.trim().toLowerCase();
   suggestionsEl.innerHTML = "";
@@ -199,21 +199,27 @@ function saveStats() {
   localStorage.setItem("glotle_user_stats", JSON.stringify(userStats));
 }
 
-// UI Controls & Navigation
-statsModalBtn.addEventListener("click", () => {
+// Unified Modal & Navigation Controls
+settingsOpenBtn.addEventListener("click", () => {
   document.getElementById("stat-guesses").textContent = userStats.guesses;
   const accuracy = userStats.guesses > 0 ? Math.round((userStats.correctGuesses / userStats.guesses) * 100) : 0;
   document.getElementById("stat-accuracy").textContent = `${accuracy}%`;
   document.getElementById("stat-best-streak").textContent = bestStreak;
   
-  statsModal.classList.remove("hidden");
+  settingsModal.classList.remove("hidden");
 });
 
-closeModalBtn.addEventListener("click", () => statsModal.classList.add("hidden"));
+closeModalBtn.addEventListener("click", () => settingsModal.classList.add("hidden"));
 
-modalAboutBtn.addEventListener("click", () => {
-  statsModal.classList.add("hidden");
-  showView("about-view");
+infoLinkBtns.forEach(btn => {
+  btn.addEventListener("click", () => {
+    const targetId = btn.dataset.target;
+    settingsModal.classList.add("hidden");
+    showView("info-view");
+    
+    document.querySelectorAll(".info-card").forEach(card => card.classList.add("hidden"));
+    document.getElementById(targetId).classList.remove("hidden");
+  });
 });
 
 backToGameBtn.addEventListener("click", () => showView("game-view"));
@@ -234,8 +240,9 @@ shareBtn.addEventListener("click", () => {
 
 submitBtn.addEventListener("click", makeGuess);
 
+// Dark Mode Toggle
 themeToggleBtn.addEventListener("click", () => {
   document.body.classList.toggle("dark-theme");
   const isDark = document.body.classList.contains("dark-theme");
-  themeToggleBtn.textContent = isDark ? "Light Mode" : "Dark Mode";
+  themeToggleBtn.textContent = `Dark Mode: ${isDark ? "On" : "Off"}`;
 });
