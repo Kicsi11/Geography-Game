@@ -385,7 +385,7 @@ shareBtn.addEventListener("click", async () => {
   const shareData = {
     title: 'Glotle',
     text: 'Test out your language skills with Glotle!',
-    url: window.location.href
+    url: 'https://kicsi11.github.io/Geography-Game/'
   };
 
   if (navigator.share) {
