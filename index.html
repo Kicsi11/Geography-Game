@@ -12,77 +12,157 @@
   <div id="flash-overlay"></div>
 
   <header class="app-header">
-    <h1 class="logo">Glotle</h1>
+    <div class="brand">
+      <h1 class="logo">GLOTLE</h1>
+      <span class="sub-logo">Language Identifier</span>
+    </div>
     <div class="header-actions">
-      <button id="theme-toggle" class="icon-btn">Dark Mode</button>
-      <button id="stats-modal-btn" class="icon-btn">Stats</button>
+      <button id="settings-open-btn" class="icon-btn" aria-label="Settings">
+        <svg class="gear-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+      </button>
     </div>
   </header>
+
+  <!-- Top Ad Slot (Header Leaderboard) -->
+  <div class="ad-container ad-top">
+    <div class="ad-placeholder">
+      <!-- Paste your Google AdSense Top Banner Code Here -->
+      <span>Advertisement Slot - Header</span>
+    </div>
+  </div>
 
   <main class="container">
     <!-- Game View -->
     <section id="game-view" class="view">
       <div class="selector-row">
-        <label for="region-select">Region:</label>
-        <select id="region-select" class="dropdown">
-          <option value="Europe" selected>Europe</option>
-          <option value="Africa">Africa</option>
-          <option value="Asia">Asia</option>
-          <option value="Americas and Pacific">Americas and Pacific</option>
-          <option value="World">World</option>
-        </select>
+        <label for="region-select">Region Pool</label>
+        <div class="custom-select">
+          <select id="region-select">
+            <option value="Europe" selected>Europe</option>
+            <option value="Africa">Africa</option>
+            <option value="Asia">Asia</option>
+            <option value="Americas and Pacific">Americas &amp; Pacific</option>
+            <option value="World">World (All)</option>
+          </select>
+        </div>
       </div>
 
       <div class="streak-bar">
-        <span>Streak: <strong id="streak-count">0</strong></span>
-        <span>Best: <strong id="best-streak">0</strong></span>
+        <div class="streak-item">
+          <span class="label">Current Streak</span>
+          <span class="value" id="streak-count">0</span>
+        </div>
+        <div class="streak-divider"></div>
+        <div class="streak-item">
+          <span class="label">Best Streak</span>
+          <span class="value" id="best-streak">0</span>
+        </div>
       </div>
 
-      <div class="card">
+      <div class="card sentence-card">
+        <div class="card-glass-glow"></div>
         <p id="sentence-prompt" class="sentence">Loading sentence...</p>
       </div>
 
       <div class="input-container">
-        <input type="text" id="language-input" placeholder="Type a language..." autocomplete="off" />
+        <input type="text" id="language-input" placeholder="Type a language name..." autocomplete="off" spellcheck="false" />
         <ul id="suggestions-list" class="suggestions-box"></ul>
       </div>
 
-      <button id="submit-btn" class="primary-btn">Submit Guess</button>
+      <button id="submit-btn" class="primary-btn">Submit Answer</button>
       <p id="feedback-msg" class="feedback"></p>
     </section>
 
-    <!-- About View -->
-    <section id="about-view" class="view hidden">
-      <h2>About Glotle</h2>
-      <p>Test your linguistic knowledge by identifying sentences from around the world!</p>
-      <button id="back-to-game-btn" class="primary-btn">Back to Game</button>
+    <!-- Mid-Content Ad Slot -->
+    <div class="ad-container ad-inline">
+      <div class="ad-placeholder">
+        <!-- Paste your Google AdSense In-Feed / Banner Code Here -->
+        <span>Advertisement Slot - Inline</span>
+      </div>
+    </div>
+
+    <!-- Info View (Google AdSense Requirements) -->
+    <section id="info-view" class="view hidden">
+      <button id="back-to-game-btn" class="secondary-btn back-btn">&larr; Back to Game</button>
+
+      <article id="about-content" class="info-card">
+        <h2>About Glotle</h2>
+        <p>Glotle is an interactive educational linguistics game designed to test and improve your knowledge of world languages through sentence structure and script recognition.</p>
+      </article>
+
+      <article id="privacy-content" class="info-card">
+        <h2>Privacy Policy</h2>
+        <p>Your privacy is important to us. Glotle processes game statistics and preferences locally on your device via browser LocalStorage. We do not collect or store personal identifiable information on external servers.</p>
+        <p>Third-party vendors, including Google, use cookies to serve ads based on prior visits to our website. You may opt out of personalized advertising by visiting Google Ad Settings.</p>
+      </article>
+
+      <article id="terms-content" class="info-card">
+        <h2>Terms of Service</h2>
+        <p>By using Glotle, you agree to access the platform for personal, non-commercial entertainment and educational purposes only.</p>
+      </article>
+
+      <article id="contact-content" class="info-card">
+        <h2>Contact</h2>
+        <p>For questions, support, or feedback, please reach out via our community platform channels.</p>
+      </article>
     </section>
   </main>
 
-  <!-- Stats Modal -->
-  <div id="stats-modal" class="modal hidden">
+  <!-- Combined Settings & Stats Modal -->
+  <div id="settings-modal" class="modal hidden">
     <div class="modal-content">
-      <button id="close-modal-btn" class="close-btn">&times;</button>
-      <h2>Statistics</h2>
-      <div class="stats-grid">
-        <div class="stat-box">
-          <span id="stat-guesses" class="stat-num">0</span>
-          <span class="stat-label">Played</span>
-        </div>
-        <div class="stat-box">
-          <span id="stat-accuracy" class="stat-num">0%</span>
-          <span class="stat-label">Accuracy</span>
-        </div>
-        <div class="stat-box">
-          <span id="stat-best-streak" class="stat-num">0</span>
-          <span class="stat-label">Best Streak</span>
+      <div class="modal-header">
+        <h2>Settings &amp; Stats</h2>
+        <button id="close-modal-btn" class="close-btn">&times;</button>
+      </div>
+
+      <div class="modal-section">
+        <h3>Preferences</h3>
+        <div class="setting-row">
+          <span>Appearance</span>
+          <button id="theme-toggle" class="toggle-btn">Dark Mode: Off</button>
         </div>
       </div>
+
+      <div class="modal-section">
+        <h3>Your Statistics</h3>
+        <div class="stats-grid">
+          <div class="stat-box">
+            <span id="stat-guesses" class="stat-num">0</span>
+            <span class="stat-label">Played</span>
+          </div>
+          <div class="stat-box">
+            <span id="stat-accuracy" class="stat-num">0%</span>
+            <span class="stat-label">Accuracy</span>
+          </div>
+          <div class="stat-box">
+            <span id="stat-best-streak" class="stat-num">0</span>
+            <span class="stat-label">Best Streak</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <h3>Information &amp; Legal</h3>
+        <div class="info-links">
+          <button class="info-link-btn" data-target="about-content">About</button>
+          <button class="info-link-btn" data-target="privacy-content">Privacy Policy</button>
+          <button class="info-link-btn" data-target="terms-content">Terms of Service</button>
+          <button class="info-link-btn" data-target="contact-content">Contact</button>
+        </div>
+      </div>
+
       <div class="modal-actions">
         <button id="share-btn" class="primary-btn">Share Score</button>
-        <button id="modal-about-btn" class="secondary-btn">About</button>
       </div>
     </div>
   </div>
+
+  <footer class="app-footer">
+    <p>&copy; 2026 Glotle. All rights reserved.</p>
+  </footer>
 </body>
 </html>
