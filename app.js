@@ -269,9 +269,9 @@ function updateLeaderboardScore(newStreak, previousName = null) {
     leaderboard.push({ name: nameToUse, streak: newStreak });
   }
 
-  // 3. Keep top 100 ordered by streak length
+  // 3. Keep top 1000 ordered by streak length
   leaderboard.sort((a, b) => b.streak - a.streak);
-  leaderboard = leaderboard.slice(0, 100);
+  leaderboard = leaderboard.slice(0, 1000);
 
   localStorage.setItem(LOCAL_STORAGE_KEY_LEADERBOARD, JSON.stringify(leaderboard));
   renderLeaderboard();
