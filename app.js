@@ -13,6 +13,14 @@ const allLanguages = [
 // Local Storage Keys
 const LOCAL_STORAGE_KEY_LEADERBOARD = 'glotle_leaderboard';
 const LOCAL_STORAGE_KEY_USERNAME = 'glotle_username';
+const LOCAL_STORAGE_KEY_USER_ID = 'glotle_user_id';
+
+// Unique Player Identifier (prevents hijacking/overwriting scores)
+let userId = localStorage.getItem(LOCAL_STORAGE_KEY_USER_ID);
+if (!userId) {
+  userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+  localStorage.setItem(LOCAL_STORAGE_KEY_USER_ID, userId);
+}
 
 // Game State
 let database = [];
@@ -233,43 +241,33 @@ function getLeaderboard() {
   }
   
   const defaultBoard = [
-    { name: "LinguistPro", streak: 42 },
-    { name: "PolyglotMaster", streak: 35 },
-    { name: "WordSmith", streak: 28 },
-    { name: "AtlasMapper", streak: 21 },
-    { name: "GlobalGuesser", streak: 18 }
+    { id: "def_1", name: "LinguistPro", streak: 42 },
+    { id: "def_2", name: "PolyglotMaster", streak: 35 },
+    { id: "def_3", name: "WordSmith", streak: 28 },
+    { id: "def_4", name: "AtlasMapper", streak: 21 },
+    { id: "def_5", name: "GlobalGuesser", streak: 18 }
   ];
   localStorage.setItem(LOCAL_STORAGE_KEY_LEADERBOARD, JSON.stringify(defaultBoard));
   return defaultBoard;
 }
 
-function updateLeaderboardScore(newStreak, previousName = null) {
-  if (newStreak <= 0 && !previousName) return;
-
+function updateLeaderboardScore(newStreak) {
   let leaderboard = getLeaderboard();
   const nameToUse = playerUsername.trim() || 'Anonymous Player';
 
-  // 1. Clear out old username record if name changed
-  if (previousName && previousName.toLowerCase() !== nameToUse.toLowerCase()) {
-    leaderboard = leaderboard.filter(
-      entry => entry.name.toLowerCase() !== previousName.toLowerCase()
-    );
-  }
-
-  // 2. Check if new active name already exists
-  const existingIndex = leaderboard.findIndex(
-    entry => entry.name.toLowerCase() === nameToUse.toLowerCase()
-  );
+  // Search by unique player ID instead of name
+  const existingIndex = leaderboard.findIndex(entry => entry.id === userId);
 
   if (existingIndex !== -1) {
+    leaderboard[existingIndex].name = nameToUse;
     if (newStreak > leaderboard[existingIndex].streak) {
       leaderboard[existingIndex].streak = newStreak;
     }
   } else if (newStreak > 0) {
-    leaderboard.push({ name: nameToUse, streak: newStreak });
+    leaderboard.push({ id: userId, name: nameToUse, streak: newStreak });
   }
 
-  // 3. Keep top 1000 ordered by streak length
+  // Sort descending and cap at top 1000
   leaderboard.sort((a, b) => b.streak - a.streak);
   leaderboard = leaderboard.slice(0, 1000);
 
@@ -281,14 +279,12 @@ function renderLeaderboard() {
   if (!leaderboardList) return;
 
   const leaderboard = getLeaderboard();
-  const nameToUse = playerUsername.trim() || 'Anonymous Player';
-
   leaderboardList.innerHTML = '';
   let userRank = -1;
 
   leaderboard.forEach((entry, index) => {
     const rank = index + 1;
-    const isCurrentUser = entry.name.toLowerCase() === nameToUse.toLowerCase();
+    const isCurrentUser = entry.id === userId;
     if (isCurrentUser) userRank = rank;
 
     let rankClass = '';
@@ -328,15 +324,14 @@ if (usernameInput && saveUsernameBtn) {
   usernameInput.value = playerUsername;
 
   saveUsernameBtn.addEventListener('click', () => {
-    const oldName = playerUsername;
     const newName = usernameInput.value.trim();
 
     if (newName) {
       playerUsername = newName;
       localStorage.setItem(LOCAL_STORAGE_KEY_USERNAME, playerUsername);
 
-      // Pass oldName to remove old entry from leaderboard
-      updateLeaderboardScore(bestStreak, oldName);
+      // Updates active user's display name attached to their ID
+      updateLeaderboardScore(bestStreak);
 
       saveUsernameBtn.textContent = 'Saved!';
       setTimeout(() => saveUsernameBtn.textContent = 'Save', 1500);
