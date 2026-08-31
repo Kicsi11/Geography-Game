@@ -60,12 +60,30 @@
 
       <div class="streak-bar">
         <div class="streak-item">
-          <span class="label">Current Streak</span>
+          <div class="streak-header">
+            <svg class="streak-icon flame-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M8.5 14.5A2.5 2.5 0 0 0 11 17c1.38 0 2.5-1.12 2.5-2.5 0-1.7-1.5-3-2-4.5-.5 1.5-3 2.5-3 4.5z"></path>
+              <path d="M12 2c1.4 3 4 3.5 4 8.5A6 6 0 1 1 6 10.5C6 7 8 4 12 2z"></path>
+            </svg>
+            <span class="label">Current Streak</span>
+          </div>
           <span class="value" id="streak-count">0</span>
         </div>
+
         <div class="streak-divider"></div>
+
         <div class="streak-item">
-          <span class="label">Best Streak</span>
+          <div class="streak-header">
+            <svg class="streak-icon trophy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+              <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+              <path d="M4 22h16"></path>
+              <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path>
+              <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path>
+              <path d="M18 2H6v7a6 6 0 0 0 12 0V2z"></path>
+            </svg>
+            <span class="label">Best Streak</span>
+          </div>
           <span class="value" id="best-streak">0</span>
         </div>
       </div>
