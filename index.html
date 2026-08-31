@@ -35,9 +35,7 @@
   </header>
 
   <div class="ad-container ad-top">
-    <div class="ad-placeholder">
-      <span>Advertisement Slot - Header</span>
-    </div>
+    <div class="ad-placeholder"></div>
   </div>
 
   <main class="container">
@@ -93,9 +91,7 @@
     </section>
 
     <div class="ad-container ad-inline">
-      <div class="ad-placeholder">
-        <span>Advertisement Slot - Inline</span>
-      </div>
+      <div class="ad-placeholder"></div>
     </div>
 
     <section id="info-view" class="view hidden">
@@ -123,21 +119,12 @@
     </section>
   </main>
 
-  <!-- Settings, Stats & Leaderboard Modal -->
+  <!-- Settings & Stats Modal -->
   <div id="settings-modal" class="modal hidden">
     <div class="modal-content">
       <div class="modal-header">
         <h2>Settings &amp; Stats</h2>
         <button id="close-modal-btn" class="close-btn">&times;</button>
-      </div>
-
-      <!-- Submit Best Streak / Username Setup -->
-      <div class="modal-section">
-        <h3>Submit Best Streak</h3>
-        <div class="account-input-group">
-          <input type="text" id="username-input" placeholder="Enter username..." maxlength="16" />
-          <button id="save-username-btn" class="secondary-btn">Save</button>
-        </div>
       </div>
 
       <!-- User Stats -->
@@ -156,19 +143,6 @@
             <span id="stat-best-streak" class="stat-num">0</span>
             <span class="stat-label">Best Streak</span>
           </div>
-        </div>
-      </div>
-
-      <!-- Scrollable Top 1000 Leaderboard -->
-      <div class="modal-section">
-        <div class="leaderboard-header">
-          <h3>Top 1000 Leaderboard</h3>
-          <span id="user-rank-display" class="user-rank-tag">Your Rank: --</span>
-        </div>
-        <div class="leaderboard-scroll-container">
-          <ul id="leaderboard-list" class="leaderboard-list">
-            <!-- Dynamic items rendered via JS -->
-          </ul>
         </div>
       </div>
 
