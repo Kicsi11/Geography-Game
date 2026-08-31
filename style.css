@@ -12,17 +12,6 @@
   --blur-effect: blur(20px);
 }
 
-body.light-theme {
-  --bg-main: #f8fafc;
-  --bg-gradient: radial-gradient(circle at 50% -20%, #e0e7ff 0%, #f1f5f9 45%, #e2e8f0 100%);
-  --card-bg: rgba(255, 255, 255, 0.8);
-  --card-border: rgba(0, 0, 0, 0.08);
-  --card-border-hover: rgba(99, 102, 241, 0.4);
-  --text-main: #0f172a;
-  --text-muted: #64748b;
-  --shadow-main: 0 20deg 30px -10px rgba(0, 0, 0, 0.08);
-}
-
 * {
   box-sizing: border-box;
   margin: 0;
@@ -38,7 +27,6 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  transition: background 0.3s ease, color 0.3s ease;
 }
 
 #flash-overlay {
@@ -73,10 +61,39 @@ body {
   font-size: 1.6rem;
   font-weight: 900;
   letter-spacing: 0.15em;
-  background: linear-gradient(135deg, #818cf8 0%, #c084fc 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-shadow: 0 0 30px rgba(129, 140, 248, 0.3);
+  color: #818cf8;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.globe-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 1px;
+}
+
+.globe-icon {
+  width: 1.3rem;
+  height: 1.3rem;
+  stroke: #818cf8;
+  animation: spinSlow 12s linear infinite;
+}
+
+.globe-icon.fast-spin {
+  animation: spinFast 1s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+@keyframes spinSlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes spinFast {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(1080deg); }
 }
 
 .sub-logo {
@@ -298,7 +315,7 @@ input[type="text"]:focus {
   transform: translateY(0);
 }
 
-.secondary-btn, .toggle-btn, .info-link-btn {
+.secondary-btn, .info-link-btn {
   padding: 0.65rem 1.1rem;
   border-radius: 10px;
   border: 1px solid var(--card-border);
@@ -310,7 +327,7 @@ input[type="text"]:focus {
   transition: all 0.2s ease;
 }
 
-.secondary-btn:hover, .toggle-btn:hover, .info-link-btn:hover {
+.secondary-btn:hover, .info-link-btn:hover {
   border-color: var(--card-border-hover);
   background: rgba(255, 255, 255, 0.08);
 }
@@ -410,12 +427,6 @@ input[type="text"]:focus {
   margin-bottom: 0.85rem;
   letter-spacing: 0.08em;
   font-weight: 700;
-}
-
-.setting-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 
 .stats-grid {
