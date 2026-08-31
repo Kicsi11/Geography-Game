@@ -642,15 +642,9 @@ input[type="text"]:focus {
   height: 90px;
   border: 1px dashed var(--card-border);
   border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-muted);
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
   background: rgba(0, 0, 0, 0.1);
 }
+
 
 .app-footer {
   text-align: center;
