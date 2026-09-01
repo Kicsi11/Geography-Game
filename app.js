@@ -68,8 +68,8 @@ function updateStreakDisplay() {
   bestStreakEl.textContent = modeRegionalStreaks[key].best;
 }
 
-// Speech Synthesis Helper
-function playSpeech(text, langCode) {
+// Speech Synthesis Helper with Pulse Animation
+function playSpeech(text, langCode, buttonElement) {
   if (!('speechSynthesis' in window)) {
     alert("Speech synthesis is not supported in this browser.");
     return;
@@ -80,7 +80,20 @@ function playSpeech(text, langCode) {
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = langCode || 'en-US';
   utterance.rate = 0.9; // Slightly lower rate for clearer pronunciation
-  
+
+  // Animation triggers
+  utterance.onstart = () => {
+    if (buttonElement) buttonElement.classList.add("playing");
+  };
+
+  utterance.onend = () => {
+    if (buttonElement) buttonElement.classList.remove("playing");
+  };
+
+  utterance.onerror = () => {
+    if (buttonElement) buttonElement.classList.remove("playing");
+  };
+
   window.speechSynthesis.speak(utterance);
 }
 
@@ -268,13 +281,20 @@ function loadNextRound() {
 
   // Display prompt according to mode
   if (currentMode === "audio") {
+    // Speaker SVG Icon
     sentenceEl.innerHTML = `
-      <button id="play-audio-btn" class="audio-play-button">
-        🔊 Play Audio Snippet
+      <button id="play-audio-btn" class="audio-play-button" aria-label="Listen to audio prompt">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="speaker-icon">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+        </svg>
       </button>
     `;
-    document.getElementById("play-audio-btn").addEventListener("click", () => {
-      playSpeech(currentRound.text, currentRound.langCode);
+    
+    const playBtn = document.getElementById("play-audio-btn");
+    playBtn.addEventListener("click", () => {
+      playSpeech(currentRound.text, currentRound.langCode, playBtn);
     });
   } else {
     sentenceEl.textContent = `"${currentRound.text}"`;
