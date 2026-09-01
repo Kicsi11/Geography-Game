@@ -2,56 +2,61 @@
   { 
     "text": "Acesta este un test în limba română.", 
     "language": "Romanian", 
-    "region": "Europe",
-    "audioSrc": "audio/romanian_sample.mp3"
+    "langCode": "ro-RO",
+    "region": "Europe"
   },
   { 
     "text": "Nu aduce anul ce aduce ceasul.", 
     "language": "Romanian", 
+    "langCode": "ro-RO",
     "region": "Europe" 
   },
   { 
     "text": "Le rapide renard brun saute par-dessus le chien paresseux.", 
     "language": "French", 
-    "region": "Europe",
-    "audioSrc": "audio/french_sample.mp3"
+    "langCode": "fr-FR",
+    "region": "Europe"
   },
   { 
     "text": "Der schnelle braune Fuchs springt über den faulen Hund.", 
     "language": "German", 
+    "langCode": "de-DE",
     "region": "Europe" 
   },
   { 
     "text": "Habari gani, jambo bwana.", 
     "language": "Swahili", 
-    "region": "Africa",
-    "audioSrc": "audio/swahili_sample.mp3"
+    "langCode": "sw-KE",
+    "region": "Africa"
   },
   { 
     "text": "Die vinnige bruin vos spring oor die lui hond.", 
     "language": "Afrikaans", 
+    "langCode": "af-ZA",
     "region": "Africa" 
   },
   { 
     "text": "素早い茶色のキツネがのろまな犬を飛び越えます。", 
     "language": "Japanese", 
-    "region": "Asia",
-    "audioSrc": "audio/japanese_sample.mp3"
+    "langCode": "ja-JP",
+    "region": "Asia"
   },
   { 
     "text": "빠른 갈색 여우가 게으른 개를 뛰어넘습니다.", 
     "language": "Korean", 
+    "langCode": "ko-KR",
     "region": "Asia" 
   },
   { 
     "text": "Kia ora, selamat datang ke dunia modern.", 
     "language": "Maori", 
+    "langCode": "mi-NZ",
     "region": "Americas and Pacific" 
   },
   { 
     "text": "El rápido zorro marrón salta sobre el perro perezoso.", 
     "language": "Spanish", 
-    "region": "Americas and Pacific",
-    "audioSrc": "audio/spanish_sample.mp3"
+    "langCode": "es-ES",
+    "region": "Americas and Pacific"
   }
 ]
