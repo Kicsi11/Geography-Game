@@ -1,26 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Glotle - Language Guessing Game</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Glotle - Language Guesser</title>
+  <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
   <div id="flash-overlay"></div>
 
-  <!-- App Header -->
   <header class="app-header">
     <div class="brand" id="logo-btn">
       <div class="logo">
-        GL<span class="globe-wrapper">
-          <svg class="globe-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <span class="logo-text">GL</span>
+        <span class="globe-wrapper intro-anim">
+          <svg class="globe-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10"></circle>
             <line x1="2" y1="12" x2="22" y2="12"></line>
             <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10z"></path>
           </svg>
-        </span>TLE
+        </span>
+        <span class="logo-text">TLE</span>
       </div>
       <span class="sub-logo">Language Guesser</span>
     </div>
@@ -34,144 +35,97 @@
   </header>
 
   <main class="container">
-    <!-- Main Game View -->
     <div id="game-view" class="view">
-      <div class="selector-row">
-        <div class="custom-select">
+      <div class="controls-bar">
+        <div class="control-group">
+          <label for="mode-select">Mode:</label>
           <select id="mode-select">
-            <option value="text">Text Mode</option>
-            <option value="audio">Audio Mode</option>
+            <option value="text">Text</option>
+            <option value="audio">Audio</option>
           </select>
         </div>
 
-        <!-- Region selector container (Hidden automatically in Audio mode) -->
-        <div class="custom-select" id="region-select-container">
+        <div class="control-group" id="region-select-container">
+          <label for="region-select">Region:</label>
           <select id="region-select">
             <option value="Europe">Europe</option>
-            <option value="Africa">Africa</option>
             <option value="Asia">Asia</option>
-            <option value="Americas and Pacific">Americas & Pacific</option>
+            <option value="Africa">Africa</option>
+            <option value="Americas">Americas</option>
+            <option value="Oceania">Oceania</option>
             <option value="World">World</option>
           </select>
         </div>
       </div>
 
-      <!-- Streak Dashboard -->
-      <div class="streak-bar">
+      <div class="streak-board">
         <div class="streak-item">
-          <div class="streak-header">
-            <svg class="streak-icon flame-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 23c-4.97 0-9-3.58-9-8 0-3.07 1.87-6.22 4.05-8.66.52-.58 1.45-.19 1.42.58-.07 1.62.43 3.08 1.53 4.1 1.1 1.02 2.1 1.02 2.62-.22.58-1.39.29-3.32-.43-4.8C11.53 4.6 10.3 3.1 9.8 1.4c-.2-.67.48-1.25 1.1-.94C15.86 2.88 21 8.2 21 15c0 4.42-4.03 8-9 8z"/>
-            </svg>
-            <span class="label">Streak</span>
-          </div>
-          <span id="streak-count" class="value">0</span>
+          <span class="label">Current Streak</span>
+          <span class="value" id="streak-count">0</span>
         </div>
-        <div class="streak-divider"></div>
         <div class="streak-item">
-          <div class="streak-header">
-            <svg class="streak-icon trophy-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94A5.01 5.01 0 0 0 11 15.9V18H8v2h8v-2h-3v-2.1c2.16-.4 3.86-2.11 4.39-4.39C19.08 11.23 21 9.15 21 6.6V5c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z"/>
-            </svg>
-            <span class="label">Best</span>
-          </div>
-          <span id="best-streak" class="value">0</span>
+          <span class="label">Best Streak</span>
+          <span class="value" id="best-streak">0</span>
         </div>
       </div>
 
-      <!-- Main Play Card -->
-      <div class="sentence-card">
-        <p id="sentence-prompt" class="sentence">Loading prompt...</p>
+      <div class="card prompt-card">
+        <div id="sentence-prompt" class="prompt-text">Loading game...</div>
       </div>
 
-      <!-- User Inputs -->
       <div class="input-container">
-        <input type="text" id="language-input" placeholder="Type a language (e.g., Romanian, Maori)..." autocomplete="off">
-        <ul id="suggestions-list" class="suggestions-box"></ul>
+        <div class="input-wrapper">
+          <input type="text" id="language-input" placeholder="Type a language..." autocomplete="off" />
+          <ul id="suggestions-list" class="suggestions-list"></ul>
+        </div>
+        <button id="submit-btn" class="primary-btn">Submit</button>
       </div>
 
-      <button id="submit-btn" class="primary-btn">Submit Guess</button>
-
-      <p id="feedback-msg" class="feedback"></p>
-
-      <!-- Advertisement Slot -->
-      <div class="ad-container">
-        <div class="ad-placeholder"></div>
-      </div>
+      <div id="feedback-msg" class="feedback"></div>
     </div>
 
-    <!-- Info View -->
     <div id="info-view" class="view hidden">
-      <button id="back-to-game-btn" class="secondary-btn back-btn">&larr; Back to Game</button>
+      <button id="back-to-game-btn" class="secondary-btn">&larr; Back to Game</button>
       
-      <div id="about-card" class="info-card hidden">
+      <div id="about-card" class="info-card card hidden">
         <h2>About Glotle</h2>
-        <p>Glotle is a language identification game designed to test and expand your linguistic knowledge across various world regions.</p>
+        <p>Glotle is a language identification game designed to test your knowledge of written and spoken languages around the world.</p>
       </div>
 
-      <div id="contact-card" class="info-card hidden">
-        <h2>Contact Us</h2>
-        <p>Have suggestions, feedback, or language sentence submissions? Reach out to us at support@glotle.com.</p>
-      </div>
-
-      <div id="privacy-card" class="info-card hidden">
-        <h2>Privacy Policy</h2>
-        <p>Glotle saves your streak data locally on your device. We do not track or sell your personal information.</p>
-      </div>
-
-      <div id="terms-card" class="info-card hidden">
-        <h2>Terms of Service</h2>
-        <p>Glotle is provided as-is for educational and entertainment purposes.</p>
+      <div id="help-card" class="info-card card hidden">
+        <h2>How to Play</h2>
+        <p>Read or listen to the prompt provided, then type and select the correct matching language from the dropdown menu.</p>
       </div>
     </div>
   </main>
 
-  <!-- Modal Overlay -->
   <div id="settings-modal" class="modal hidden">
-    <div class="modal-content">
+    <div class="modal-content card">
       <div class="modal-header">
-        <h2>Statistics & Information</h2>
+        <h2>Statistics & Info</h2>
         <button id="close-modal-btn" class="close-btn">&times;</button>
       </div>
-
-      <div class="modal-section">
-        <h3>Game Stats</h3>
-        <div class="stats-grid">
-          <div class="stat-box">
-            <span id="stat-guesses" class="stat-num">0</span>
-            <span class="stat-label">Guesses</span>
-          </div>
-          <div class="stat-box">
-            <span id="stat-accuracy" class="stat-num">0%</span>
-            <span class="stat-label">Accuracy</span>
-          </div>
-          <div class="stat-box">
-            <span id="stat-best-streak" class="stat-num">0</span>
-            <span class="stat-label">Best Streak</span>
-          </div>
+      <div class="stats-grid">
+        <div class="stat-box">
+          <span class="stat-value" id="stat-guesses">0</span>
+          <span class="stat-label">Total Guesses</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-value" id="stat-accuracy">0%</span>
+          <span class="stat-label">Accuracy</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-value" id="stat-best-streak">0</span>
+          <span class="stat-label">Top Streak</span>
         </div>
       </div>
-
-      <div class="modal-section">
-        <h3>Share</h3>
-        <button id="share-btn" class="primary-btn">Share Score</button>
-      </div>
-
-      <div class="modal-section">
-        <h3>Information</h3>
-        <div class="info-links">
-          <button class="info-link-btn" data-target="about-card">About</button>
-          <button class="info-link-btn" data-target="contact-card">Contact</button>
-          <button class="info-link-btn" data-target="privacy-card">Privacy</button>
-          <button class="info-link-btn" data-target="terms-card">Terms</button>
-        </div>
+      <div class="modal-actions">
+        <button class="info-link-btn secondary-btn" data-target="about-card">About</button>
+        <button class="info-link-btn secondary-btn" data-target="help-card">Help</button>
+        <button id="share-btn" class="primary-btn">Share Stats</button>
       </div>
     </div>
   </div>
-
-  <footer class="app-footer">
-    <p>&copy; Glotle - Language Identification Game</p>
-  </footer>
 
   <script src="app.js"></script>
 </body>
