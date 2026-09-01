@@ -53,20 +53,44 @@
   ],
   "audioDatabase": [
     { 
-      "audioFile": "maori_1.mp3", 
-      "language": "Maori"
-    },
-    { 
       "audioFile": "spanish_1.mp3", 
       "language": "Spanish"
+    },
+    { 
+      "audioFile": "russian_1.mp3", 
+      "language": "Russian"
+    },
+    { 
+      "audioFile": "german_1.mp3", 
+      "language": "German"
     },
     { 
       "audioFile": "french_1.mp3", 
       "language": "French"
     },
     { 
-      "audioFile": "german_1.mp3", 
-      "language": "German"
+      "audioFile": "chinese_1.mp3", 
+      "language": "Chinese"
+    },
+    { 
+      "audioFile": "italian_1.mp3", 
+      "language": "Italian"
+    },
+    { 
+      "audioFile": "portuguese_1.mp3", 
+      "language": "Portuguese"
+    },
+    { 
+      "audioFile": "dutch_1.mp3", 
+      "language": "Dutch"
+    },
+    { 
+      "audioFile": "thai_1.mp3", 
+      "language": "Thai"
+    },
+    { 
+      "audioFile": "greek_1.mp3", 
+      "language": "Greek"
     },
     { 
       "audioFile": "japanese_1.mp3", 
