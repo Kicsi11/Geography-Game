@@ -240,12 +240,16 @@ function makeGuess() {
   const userGuess = inputEl.value.trim();
   if (!userGuess || !currentRound) return;
 
+  submitBtn.disabled = true;
+
   const key = ensureStreakKeyExists();
   const activeData = modeRegionalStreaks[key];
 
   userStats.guesses++;
 
-  if (userGuess.toLowerCase() === currentRound.language.toLowerCase()) {
+  const isCorrect = userGuess.toLowerCase() === currentRound.language.toLowerCase();
+
+  if (isCorrect) {
     triggerFlash("correct-flash");
     
     activeData.current++;
@@ -265,8 +269,6 @@ function makeGuess() {
 
     feedbackEl.style.color = "#10b981";
     feedbackEl.textContent = "Correct!";
-    setTimeout(loadNextRound, 400);
-
   } else {
     triggerFlash("wrong-flash");
     
@@ -274,8 +276,12 @@ function makeGuess() {
     
     feedbackEl.style.color = "#ef4444";
     feedbackEl.textContent = `Incorrect. The answer was ${currentRound.language}.`;
-    setTimeout(loadNextRound, 1000);
   }
+
+  setTimeout(() => {
+    loadNextRound();
+    submitBtn.disabled = false;
+  }, isCorrect ? 400 : 1000);
 
   saveData();
   updateStreakDisplay();
