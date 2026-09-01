@@ -205,16 +205,19 @@ inputEl.addEventListener("input", () => {
   });
 });
 
+// Keyboard Navigation (Arrow keys & Tab) for Suggestions List
 inputEl.addEventListener("keydown", (e) => {
   const items = suggestionsEl.querySelectorAll("li");
   
-  if (e.key === "ArrowDown") {
+  if (e.key === "ArrowDown" || (e.key === "Tab" && !e.shiftKey && items.length > 0)) {
+    // Tab or Down Arrow: cycle forward
     e.preventDefault();
     if (items.length > 0) {
       selectedSuggestionIndex = (selectedSuggestionIndex + 1) % items.length;
       updateSuggestionSelection(items);
     }
-  } else if (e.key === "ArrowUp") {
+  } else if (e.key === "ArrowUp" || (e.key === "Tab" && e.shiftKey && items.length > 0)) {
+    // Shift + Tab or Up Arrow: cycle backward
     e.preventDefault();
     if (items.length > 0) {
       selectedSuggestionIndex = (selectedSuggestionIndex - 1 + items.length) % items.length;
@@ -227,6 +230,8 @@ inputEl.addEventListener("keydown", (e) => {
       suggestionsEl.innerHTML = "";
     }
     makeGuess();
+  } else if (e.key === "Escape") {
+    suggestionsEl.innerHTML = "";
   }
 });
 
@@ -235,6 +240,7 @@ function updateSuggestionSelection(items) {
     if (index === selectedSuggestionIndex) {
       item.classList.add("selected");
       item.scrollIntoView({ block: "nearest" });
+      inputEl.value = item.textContent; // Automatically populate input field as user tabs through list
     } else {
       item.classList.remove("selected");
     }
@@ -367,6 +373,13 @@ settingsOpenBtn.addEventListener("click", () => {
 });
 
 closeModalBtn.addEventListener("click", () => settingsModal.classList.add("hidden"));
+
+// Close settings modal when clicking outside on the backdrop
+window.addEventListener("click", (e) => {
+  if (e.target === settingsModal) {
+    settingsModal.classList.add("hidden");
+  }
+});
 
 infoLinkBtns.forEach(btn => {
   btn.addEventListener("click", () => {
