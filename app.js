@@ -40,9 +40,6 @@ const regionSelect = document.getElementById("region-select");
 const modeSelect = document.getElementById("mode-select");
 const logoBtn = document.getElementById("logo-btn");
 
-// Audio Player Initialization
-const audioPlayer = new Audio();
-
 // Modal Controls
 const settingsOpenBtn = document.getElementById("settings-open-btn");
 const settingsModal = document.getElementById("settings-modal");
@@ -69,6 +66,22 @@ function updateStreakDisplay() {
   const key = ensureStreakKeyExists();
   streakEl.textContent = modeRegionalStreaks[key].current;
   bestStreakEl.textContent = modeRegionalStreaks[key].best;
+}
+
+// Speech Synthesis Helper
+function playSpeech(text, langCode) {
+  if (!('speechSynthesis' in window)) {
+    alert("Speech synthesis is not supported in this browser.");
+    return;
+  }
+  
+  window.speechSynthesis.cancel(); // Cancel active speech playback
+
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = langCode || 'en-US';
+  utterance.rate = 0.9; // Slightly lower rate for clearer pronunciation
+  
+  window.speechSynthesis.speak(utterance);
 }
 
 // Fast Spin Logo Effect
@@ -104,6 +117,7 @@ if (modeSelect) {
   currentMode = modeSelect.value;
   modeSelect.addEventListener("change", (e) => {
     currentMode = e.target.value;
+    window.speechSynthesis.cancel();
     updateStreakDisplay();
     loadNextRound();
   });
@@ -114,6 +128,7 @@ if (regionSelect) {
   currentRegion = regionSelect.value;
   regionSelect.addEventListener("change", (e) => {
     currentRegion = e.target.value;
+    window.speechSynthesis.cancel();
     updateStreakDisplay();
     loadNextRound();
   });
@@ -234,18 +249,15 @@ function makeGuess() {
 function loadNextRound() {
   if (!database.length) return;
 
+  // Stop active speech playback when transitioning rounds
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+  }
+
   // Filter pool by Region
   let activePool = currentRegion === "World" 
     ? database 
     : database.filter(item => item.region === currentRegion);
-
-  // Filter by Audio availability if Audio mode selected
-  if (currentMode === "audio") {
-    const audioPool = activePool.filter(item => item.audioSrc);
-    if (audioPool.length > 0) {
-      activePool = audioPool;
-    }
-  }
 
   if (activePool.length === 0) activePool = database;
 
@@ -255,15 +267,14 @@ function loadNextRound() {
   feedbackEl.textContent = "";
 
   // Display prompt according to mode
-  if (currentMode === "audio" && currentRound.audioSrc) {
+  if (currentMode === "audio") {
     sentenceEl.innerHTML = `
       <button id="play-audio-btn" class="audio-play-button">
         🔊 Play Audio Snippet
       </button>
     `;
-    audioPlayer.src = currentRound.audioSrc;
     document.getElementById("play-audio-btn").addEventListener("click", () => {
-      audioPlayer.play();
+      playSpeech(currentRound.text, currentRound.langCode);
     });
   } else {
     sentenceEl.textContent = `"${currentRound.text}"`;
