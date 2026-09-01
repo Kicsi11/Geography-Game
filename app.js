@@ -196,7 +196,6 @@ function makeGuess() {
   if (userGuess.toLowerCase() === currentRound.language.toLowerCase()) {
     triggerFlash("correct-flash");
     
-    // Increment active combo streak
     activeData.current++;
     userStats.correctGuesses++;
 
@@ -204,12 +203,10 @@ function makeGuess() {
       confetti({ particleCount: 80, spread: 60, origin: { y: 0.6 } });
     }
 
-    // Update Best Streak for current Mode + Region
     if (activeData.current > activeData.best) {
       activeData.best = activeData.current;
     }
 
-    // Update Overall Best Streak across all modes and regions
     if (activeData.best > userStats.overallBestStreak) {
       userStats.overallBestStreak = activeData.best;
     }
@@ -221,7 +218,6 @@ function makeGuess() {
   } else {
     triggerFlash("wrong-flash");
     
-    // Reset active combo streak only
     activeData.current = 0;
     
     feedbackEl.style.color = "#ef4444";
@@ -290,7 +286,6 @@ settingsOpenBtn.addEventListener("click", () => {
   const accuracy = userStats.guesses > 0 ? Math.round((userStats.correctGuesses / userStats.guesses) * 100) : 0;
   document.getElementById("stat-accuracy").textContent = `${accuracy}%`;
   
-  // Calculate top streak across all modes and regions
   const comboBests = Object.values(modeRegionalStreaks).map(item => item.best || 0);
   const maxStreak = Math.max(0, userStats.overallBestStreak || 0, ...comboBests);
   
