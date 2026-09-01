@@ -196,7 +196,7 @@
     {"text": "Las föglias crodan d'autun.", "language": "Romansh", "region": "Europe"},
     {"text": "Il vent sufla sin la muntogna.", "language": "Romansh", "region": "Europe"},
     {"text": "La flur flurisce la primavera.", "language": "Romansh", "region": "Europe"},
-    {"text": " La glieud camina sin la Via.", "language": "Romansh", "region": "Europe"},
+    {"text": "La glieud camina sin la Via.", "language": "Romansh", "region": "Europe"},
 
     {"text": "Sol in caelo lucet.", "language": "Latin", "region": "Europe"},
     {"text": "Avis in ramo cantat.", "language": "Latin", "region": "Europe"},
@@ -593,7 +593,6 @@
     {"text": "Vindurin blæsur á fjallinum.", "language": "Faroese", "region": "Europe"},
     {"text": "Blóman blómstrar um várið.", "language": "Faroese", "region": "Europe"},
     {"text": "Fólk ganga á gøtuni.", "language": "Faroese", "region": "Europe"}
-    }
   ],
   "audioDatabase": [
     { 
