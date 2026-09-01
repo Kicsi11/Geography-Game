@@ -1,13 +1,16 @@
 const allLanguages = [
-  "Afrikaans", "Albanian", "Arabic", "Armenian", "Azerbaijani", "Basque", "Belarusian", 
-  "Bengali", "Bosnian", "Bulgarian", "Catalan", "Chinese", "Croatian", "Czech", 
-  "Danish", "Dutch", "English", "Estonian", "Finnish", "French", "Georgian", 
-  "German", "Greek", "Hebrew", "Hindi", "Hungarian", "Icelandic", "Indonesian", 
-  "Irish", "Italian", "Japanese", "Korean", "Latvian", "Lithuanian", "Macedonian", 
-  "Malay", "Maori", "Maltese", "Mongolian", "Nepali", "Norwegian", "Persian", "Polish", 
-  "Portuguese", "Punjabi", "Romani", "Romanian", "Romansh", "Russian", "Serbian", 
-  "Slovak", "Slovenian", "Spanish", "Swahili", "Swedish", "Tagalog", "Thai", 
-  "Turkish", "Ukrainian", "Urdu", "Vietnamese", "Welsh"
+  "Afrikaans", "Albanian", "Arabic", "Armenian", "Azerbaijani", "Basque", "Belarusian",
+"Bengali", "Bosnian", "Breton", "Bulgarian", "Catalan", "Chinese", "Croatian",
+"Czech", "Danish", "Dutch", "English", "Estonian", "Faroese", "Finnish",
+"French", "Frisian", "Galician", "Georgian", "German", "Greek", "Hebrew",
+"Hindi", "Hungarian", "Icelandic", "Indonesian", "Irish", "Italian", "Japanese",
+"Karelian", "Kashubian", "Korean", "Latin", "Latvian", "Lithuanian", "Lower Sorbian",
+"Luxembourgish", "Macedonian", "Malay", "Maltese", "Manx", "Maori", "Mongolian",
+"Montenegrin", "Nepali", "Norwegian", "Persian", "Polish", "Portuguese", "Punjabi",
+"Romani", "Romanian", "Romansh", "Russian", "Rusyn", "Sami", "Scots",
+"Scottish Gaelic", "Serbian", "Silesian", "Slovak", "Slovene", "Spanish", "Swahili",
+"Swedish", "Tagalog", "Thai", "Turkish", "Ukrainian", "Upper Sorbian", "Urdu",
+"Vietnamese", "Welsh"
 ];
 
 // Game State & Local Storage Initialization
