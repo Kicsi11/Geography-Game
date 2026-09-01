@@ -19,7 +19,6 @@ let currentRegion = "Europe";
 let currentMode = "text";
 let activeAudioObject = null;
 
-// Mode + Region combined streak tracking
 let modeRegionalStreaks = JSON.parse(localStorage.getItem("glotle_mode_regional_streaks")) || {};
 
 let userStats = JSON.parse(localStorage.getItem("glotle_user_stats")) || {
@@ -50,7 +49,6 @@ const closeModalBtn = document.getElementById("close-modal-btn");
 const backToGameBtn = document.getElementById("back-to-game-btn");
 const infoLinkBtns = document.querySelectorAll(".info-link-btn");
 
-// Get compound key for tracking mode + region combination
 function getStreakKey() {
   if (currentMode === "audio") {
     return "audio_global";
@@ -58,7 +56,6 @@ function getStreakKey() {
   return `${currentMode}_${currentRegion}`;
 }
 
-// Ensure selected mode/region combo structure exists
 function ensureStreakKeyExists() {
   const key = getStreakKey();
   if (!modeRegionalStreaks[key]) {
@@ -67,14 +64,12 @@ function ensureStreakKeyExists() {
   return key;
 }
 
-// Update streak UI numbers for current mode and region combination
 function updateStreakDisplay() {
   const key = ensureStreakKeyExists();
   streakEl.textContent = modeRegionalStreaks[key].current;
   bestStreakEl.textContent = modeRegionalStreaks[key].best;
 }
 
-// Stop any audio currently playing
 function stopCurrentAudio() {
   if (activeAudioObject) {
     activeAudioObject.pause();
@@ -87,7 +82,6 @@ function stopCurrentAudio() {
   }
 }
 
-// Play HTML5 Pre-Recorded Audio File
 function playAudioFile(fileName, buttonElement) {
   stopCurrentAudio();
 
@@ -120,7 +114,6 @@ function playAudioFile(fileName, buttonElement) {
   };
 }
 
-// Fast Spin Logo Effect
 if (logoBtn) {
   logoBtn.addEventListener("click", () => {
     const globe = logoBtn.querySelector(".globe-icon");
@@ -133,7 +126,6 @@ if (logoBtn) {
   });
 }
 
-// Fetch Sentence Databases
 async function initDatabase() {
   try {
     const response = await fetch("database.json");
@@ -151,14 +143,12 @@ async function initDatabase() {
 
 initDatabase();
 
-// Mode Selection Handler
 if (modeSelect) {
   currentMode = modeSelect.value;
   modeSelect.addEventListener("change", (e) => {
     currentMode = e.target.value;
     stopCurrentAudio();
 
-    // Toggle Region Selector Visibility for Audio Mode
     if (currentMode === "audio") {
       regionSelectContainer.style.display = "none";
     } else {
@@ -170,7 +160,6 @@ if (modeSelect) {
   });
 }
 
-// Region Selection Handler
 if (regionSelect) {
   currentRegion = regionSelect.value;
   regionSelect.addEventListener("change", (e) => {
@@ -181,7 +170,6 @@ if (regionSelect) {
   });
 }
 
-// Autocomplete Input Handling
 inputEl.addEventListener("input", () => {
   const query = inputEl.value.trim().toLowerCase();
   suggestionsEl.innerHTML = "";
@@ -205,19 +193,16 @@ inputEl.addEventListener("input", () => {
   });
 });
 
-// Keyboard Navigation (Arrow keys & Tab) for Suggestions List
 inputEl.addEventListener("keydown", (e) => {
   const items = suggestionsEl.querySelectorAll("li");
   
   if (e.key === "ArrowDown" || (e.key === "Tab" && !e.shiftKey && items.length > 0)) {
-    // Tab or Down Arrow: cycle forward
     e.preventDefault();
     if (items.length > 0) {
       selectedSuggestionIndex = (selectedSuggestionIndex + 1) % items.length;
       updateSuggestionSelection(items);
     }
   } else if (e.key === "ArrowUp" || (e.key === "Tab" && e.shiftKey && items.length > 0)) {
-    // Shift + Tab or Up Arrow: cycle backward
     e.preventDefault();
     if (items.length > 0) {
       selectedSuggestionIndex = (selectedSuggestionIndex - 1 + items.length) % items.length;
@@ -240,7 +225,7 @@ function updateSuggestionSelection(items) {
     if (index === selectedSuggestionIndex) {
       item.classList.add("selected");
       item.scrollIntoView({ block: "nearest" });
-      inputEl.value = item.textContent; // Automatically populate input field as user tabs through list
+      inputEl.value = item.textContent;
     } else {
       item.classList.remove("selected");
     }
@@ -251,7 +236,6 @@ document.addEventListener("click", (e) => {
   if (e.target !== inputEl) suggestionsEl.innerHTML = "";
 });
 
-// Game Core Logic
 function makeGuess() {
   const userGuess = inputEl.value.trim();
   if (!userGuess || !currentRound) return;
@@ -295,13 +279,12 @@ function makeGuess() {
 
   saveData();
   updateStreakDisplay();
-  inputEl.value = "";
   suggestionsEl.innerHTML = "";
 }
 
 function loadNextRound() {
   stopCurrentAudio();
-
+  inputEl.value = "";
   feedbackEl.textContent = "";
 
   if (currentMode === "audio") {
@@ -313,7 +296,6 @@ function loadNextRound() {
     const randomIndex = Math.floor(Math.random() * audioDatabase.length);
     currentRound = audioDatabase[randomIndex];
 
-    // Speaker Icon Button
     sentenceEl.innerHTML = `
       <button id="play-audio-btn" class="audio-play-button" aria-label="Listen to audio prompt">
         <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="speaker-icon">
@@ -335,7 +317,6 @@ function loadNextRound() {
       return;
     }
 
-    // Filter text prompts by Region
     let activePool = currentRegion === "World" 
       ? textDatabase 
       : textDatabase.filter(item => item.region === currentRegion);
@@ -358,7 +339,6 @@ function saveData() {
   localStorage.setItem("glotle_user_stats", JSON.stringify(userStats));
 }
 
-// Navigation & Modal Controls
 settingsOpenBtn.addEventListener("click", () => {
   document.getElementById("stat-guesses").textContent = userStats.guesses;
   const accuracy = userStats.guesses > 0 ? Math.round((userStats.correctGuesses / userStats.guesses) * 100) : 0;
@@ -374,7 +354,6 @@ settingsOpenBtn.addEventListener("click", () => {
 
 closeModalBtn.addEventListener("click", () => settingsModal.classList.add("hidden"));
 
-// Close settings modal when clicking outside on the backdrop
 window.addEventListener("click", (e) => {
   if (e.target === settingsModal) {
     settingsModal.classList.add("hidden");
