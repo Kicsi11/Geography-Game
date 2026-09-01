@@ -40,6 +40,17 @@
 
   <main class="container">
     <section id="game-view" class="view">
+      <!-- Controls Container -->
+      <div class="selector-row">
+        <label for="mode-select">Game Mode</label>
+        <div class="custom-select">
+          <select id="mode-select">
+            <option value="text" selected>Text Prompt</option>
+            <option value="audio">Audio Clip</option>
+          </select>
+        </div>
+      </div>
+
       <div class="selector-row">
         <label for="region-select">Region Pool</label>
         <div class="custom-select">
@@ -78,7 +89,7 @@
       </div>
 
       <div class="card sentence-card">
-        <p id="sentence-prompt" class="sentence">Loading sentence...</p>
+        <div id="sentence-prompt" class="sentence">Loading prompt...</div>
       </div>
 
       <div class="input-container">
@@ -99,7 +110,7 @@
 
       <article id="about-content" class="info-card">
         <h2>About Glotle</h2>
-        <p>Glotle is an interactive educational linguistics game designed to test and improve your knowledge of world languages through sentence structure and script recognition.</p>
+        <p>Glotle is an interactive educational linguistics game designed to test and improve your knowledge of world languages through sentence structure, scripts, and audio recognition.</p>
       </article>
 
       <article id="privacy-content" class="info-card">
