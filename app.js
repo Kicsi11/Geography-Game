@@ -11,11 +11,13 @@ const allLanguages = [
 ];
 
 // Game State & Local Storage Initialization
-let database = [];
+let textDatabase = [];
+let audioDatabase = [];
 let currentRound = null;
 let selectedSuggestionIndex = -1;
 let currentRegion = "Europe";
 let currentMode = "text";
+let activeAudioObject = null;
 
 // Mode + Region combined streak tracking
 let modeRegionalStreaks = JSON.parse(localStorage.getItem("glotle_mode_regional_streaks")) || {};
@@ -37,6 +39,7 @@ const bestStreakEl = document.getElementById("best-streak");
 const flashOverlay = document.getElementById("flash-overlay");
 const shareBtn = document.getElementById("share-btn");
 const regionSelect = document.getElementById("region-select");
+const regionSelectContainer = document.getElementById("region-select-container");
 const modeSelect = document.getElementById("mode-select");
 const logoBtn = document.getElementById("logo-btn");
 
@@ -49,6 +52,9 @@ const infoLinkBtns = document.querySelectorAll(".info-link-btn");
 
 // Get compound key for tracking mode + region combination
 function getStreakKey() {
+  if (currentMode === "audio") {
+    return "audio_global";
+  }
   return `${currentMode}_${currentRegion}`;
 }
 
@@ -68,33 +74,50 @@ function updateStreakDisplay() {
   bestStreakEl.textContent = modeRegionalStreaks[key].best;
 }
 
-// Speech Synthesis Helper with Pulse Animation
-function playSpeech(text, langCode, buttonElement) {
-  if (!('speechSynthesis' in window)) {
-    alert("Speech synthesis is not supported in this browser.");
+// Stop any audio currently playing
+function stopCurrentAudio() {
+  if (activeAudioObject) {
+    activeAudioObject.pause();
+    activeAudioObject.currentTime = 0;
+    activeAudioObject = null;
+  }
+  const playBtn = document.getElementById("play-audio-btn");
+  if (playBtn) {
+    playBtn.classList.remove("playing");
+  }
+}
+
+// Play HTML5 Pre-Recorded Audio File
+function playAudioFile(fileName, buttonElement) {
+  stopCurrentAudio();
+
+  if (!fileName) {
+    alert("Audio file missing for this item.");
     return;
   }
-  
-  window.speechSynthesis.cancel(); // Cancel active speech playback
 
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = langCode || 'en-US';
-  utterance.rate = 0.9; // Slightly lower rate for clearer pronunciation
+  const audioPath = `audio/${fileName}`;
+  activeAudioObject = new Audio(audioPath);
 
-  // Animation triggers
-  utterance.onstart = () => {
-    if (buttonElement) buttonElement.classList.add("playing");
-  };
+  if (buttonElement) {
+    buttonElement.classList.add("playing");
+  }
 
-  utterance.onend = () => {
+  activeAudioObject.play().catch(err => {
+    console.error("Playback failed:", err);
+    alert("Could not load or play audio file: " + fileName);
     if (buttonElement) buttonElement.classList.remove("playing");
-  };
+  });
 
-  utterance.onerror = () => {
+  activeAudioObject.onended = () => {
     if (buttonElement) buttonElement.classList.remove("playing");
+    activeAudioObject = null;
   };
 
-  window.speechSynthesis.speak(utterance);
+  activeAudioObject.onerror = () => {
+    if (buttonElement) buttonElement.classList.remove("playing");
+    activeAudioObject = null;
+  };
 }
 
 // Fast Spin Logo Effect
@@ -110,15 +133,18 @@ if (logoBtn) {
   });
 }
 
-// Fetch Sentence Database
+// Fetch Sentence Databases
 async function initDatabase() {
   try {
     const response = await fetch("database.json");
-    database = await response.json();
+    const data = await response.json();
+    textDatabase = data.textDatabase || [];
+    audioDatabase = data.audioDatabase || [];
+    
     updateStreakDisplay();
     loadNextRound();
   } catch (err) {
-    sentenceEl.textContent = "Error loading sentence database.";
+    sentenceEl.textContent = "Error loading database file.";
     console.error(err);
   }
 }
@@ -130,7 +156,15 @@ if (modeSelect) {
   currentMode = modeSelect.value;
   modeSelect.addEventListener("change", (e) => {
     currentMode = e.target.value;
-    window.speechSynthesis.cancel();
+    stopCurrentAudio();
+
+    // Toggle Region Selector Visibility for Audio Mode
+    if (currentMode === "audio") {
+      regionSelectContainer.style.display = "none";
+    } else {
+      regionSelectContainer.style.display = "block";
+    }
+
     updateStreakDisplay();
     loadNextRound();
   });
@@ -141,7 +175,7 @@ if (regionSelect) {
   currentRegion = regionSelect.value;
   regionSelect.addEventListener("change", (e) => {
     currentRegion = e.target.value;
-    window.speechSynthesis.cancel();
+    stopCurrentAudio();
     updateStreakDisplay();
     loadNextRound();
   });
@@ -260,28 +294,20 @@ function makeGuess() {
 }
 
 function loadNextRound() {
-  if (!database.length) return;
+  stopCurrentAudio();
 
-  // Stop active speech playback when transitioning rounds
-  if ('speechSynthesis' in window) {
-    window.speechSynthesis.cancel();
-  }
-
-  // Filter pool by Region
-  let activePool = currentRegion === "World" 
-    ? database 
-    : database.filter(item => item.region === currentRegion);
-
-  if (activePool.length === 0) activePool = database;
-
-  const randomIndex = Math.floor(Math.random() * activePool.length);
-  currentRound = activePool[randomIndex];
-  
   feedbackEl.textContent = "";
 
-  // Display prompt according to mode
   if (currentMode === "audio") {
-    // Speaker SVG Icon
+    if (!audioDatabase.length) {
+      sentenceEl.textContent = "No audio clips available in database.";
+      return;
+    }
+
+    const randomIndex = Math.floor(Math.random() * audioDatabase.length);
+    currentRound = audioDatabase[randomIndex];
+
+    // Speaker Icon Button
     sentenceEl.innerHTML = `
       <button id="play-audio-btn" class="audio-play-button" aria-label="Listen to audio prompt">
         <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="speaker-icon">
@@ -294,9 +320,24 @@ function loadNextRound() {
     
     const playBtn = document.getElementById("play-audio-btn");
     playBtn.addEventListener("click", () => {
-      playSpeech(currentRound.text, currentRound.langCode, playBtn);
+      playAudioFile(currentRound.audioFile, playBtn);
     });
+
   } else {
+    if (!textDatabase.length) {
+      sentenceEl.textContent = "No text prompts available in database.";
+      return;
+    }
+
+    // Filter text prompts by Region
+    let activePool = currentRegion === "World" 
+      ? textDatabase 
+      : textDatabase.filter(item => item.region === currentRegion);
+
+    if (activePool.length === 0) activePool = textDatabase;
+
+    const randomIndex = Math.floor(Math.random() * activePool.length);
+    currentRound = activePool[randomIndex];
     sentenceEl.textContent = `"${currentRound.text}"`;
   }
 }
