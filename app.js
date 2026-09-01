@@ -15,15 +15,10 @@ let database = [];
 let currentRound = null;
 let selectedSuggestionIndex = -1;
 let currentRegion = "Europe";
+let currentMode = "text";
 
-// Per-region streak tracking
-let regionalStreaks = JSON.parse(localStorage.getItem("glotle_regional_streaks")) || {
-  "Europe": { current: 0, best: 0 },
-  "Africa": { current: 0, best: 0 },
-  "Asia": { current: 0, best: 0 },
-  "Americas and Pacific": { current: 0, best: 0 },
-  "World": { current: 0, best: 0 }
-};
+// Mode + Region combined streak tracking
+let modeRegionalStreaks = JSON.parse(localStorage.getItem("glotle_mode_regional_streaks")) || {};
 
 let userStats = JSON.parse(localStorage.getItem("glotle_user_stats")) || {
   guesses: 0,
@@ -42,7 +37,11 @@ const bestStreakEl = document.getElementById("best-streak");
 const flashOverlay = document.getElementById("flash-overlay");
 const shareBtn = document.getElementById("share-btn");
 const regionSelect = document.getElementById("region-select");
+const modeSelect = document.getElementById("mode-select");
 const logoBtn = document.getElementById("logo-btn");
+
+// Audio Player Initialization
+const audioPlayer = new Audio();
 
 // Modal Controls
 const settingsOpenBtn = document.getElementById("settings-open-btn");
@@ -51,18 +50,25 @@ const closeModalBtn = document.getElementById("close-modal-btn");
 const backToGameBtn = document.getElementById("back-to-game-btn");
 const infoLinkBtns = document.querySelectorAll(".info-link-btn");
 
-// Ensure selected region structure exists
-function ensureRegionExists(region) {
-  if (!regionalStreaks[region]) {
-    regionalStreaks[region] = { current: 0, best: 0 };
-  }
+// Get compound key for tracking mode + region combination
+function getStreakKey() {
+  return `${currentMode}_${currentRegion}`;
 }
 
-// Update streak UI numbers for the current region
+// Ensure selected mode/region combo structure exists
+function ensureStreakKeyExists() {
+  const key = getStreakKey();
+  if (!modeRegionalStreaks[key]) {
+    modeRegionalStreaks[key] = { current: 0, best: 0 };
+  }
+  return key;
+}
+
+// Update streak UI numbers for current mode and region combination
 function updateStreakDisplay() {
-  ensureRegionExists(currentRegion);
-  streakEl.textContent = regionalStreaks[currentRegion].current;
-  bestStreakEl.textContent = regionalStreaks[currentRegion].best;
+  const key = ensureStreakKeyExists();
+  streakEl.textContent = modeRegionalStreaks[key].current;
+  bestStreakEl.textContent = modeRegionalStreaks[key].best;
 }
 
 // Fast Spin Logo Effect
@@ -93,7 +99,17 @@ async function initDatabase() {
 
 initDatabase();
 
-// Region Selection Event
+// Mode Selection Handler
+if (modeSelect) {
+  currentMode = modeSelect.value;
+  modeSelect.addEventListener("change", (e) => {
+    currentMode = e.target.value;
+    updateStreakDisplay();
+    loadNextRound();
+  });
+}
+
+// Region Selection Handler
 if (regionSelect) {
   currentRegion = regionSelect.value;
   regionSelect.addEventListener("change", (e) => {
@@ -172,15 +188,15 @@ function makeGuess() {
   const userGuess = inputEl.value.trim();
   if (!userGuess || !currentRound) return;
 
-  ensureRegionExists(currentRegion);
-  const activeData = regionalStreaks[currentRegion];
+  const key = ensureStreakKeyExists();
+  const activeData = modeRegionalStreaks[key];
 
   userStats.guesses++;
 
   if (userGuess.toLowerCase() === currentRound.language.toLowerCase()) {
     triggerFlash("correct-flash");
     
-    // Increment active region streak
+    // Increment active combo streak
     activeData.current++;
     userStats.correctGuesses++;
 
@@ -188,12 +204,12 @@ function makeGuess() {
       confetti({ particleCount: 80, spread: 60, origin: { y: 0.6 } });
     }
 
-    // Update Best Streak for Current Region
+    // Update Best Streak for current Mode + Region
     if (activeData.current > activeData.best) {
       activeData.best = activeData.current;
     }
 
-    // Update Overall Best Streak across all regions
+    // Update Overall Best Streak across all modes and regions
     if (activeData.best > userStats.overallBestStreak) {
       userStats.overallBestStreak = activeData.best;
     }
@@ -205,7 +221,7 @@ function makeGuess() {
   } else {
     triggerFlash("wrong-flash");
     
-    // Reset active region streak only
+    // Reset active combo streak only
     activeData.current = 0;
     
     feedbackEl.style.color = "#ef4444";
@@ -222,16 +238,40 @@ function makeGuess() {
 function loadNextRound() {
   if (!database.length) return;
 
-  const filteredPool = currentRegion === "World" 
+  // Filter pool by Region
+  let activePool = currentRegion === "World" 
     ? database 
     : database.filter(item => item.region === currentRegion);
 
-  const activePool = filteredPool.length > 0 ? filteredPool : database;
+  // Filter by Audio availability if Audio mode selected
+  if (currentMode === "audio") {
+    const audioPool = activePool.filter(item => item.audioSrc);
+    if (audioPool.length > 0) {
+      activePool = audioPool;
+    }
+  }
+
+  if (activePool.length === 0) activePool = database;
+
   const randomIndex = Math.floor(Math.random() * activePool.length);
-  
   currentRound = activePool[randomIndex];
-  sentenceEl.textContent = `"${currentRound.text}"`;
+  
   feedbackEl.textContent = "";
+
+  // Display prompt according to mode
+  if (currentMode === "audio" && currentRound.audioSrc) {
+    sentenceEl.innerHTML = `
+      <button id="play-audio-btn" class="audio-play-button">
+        🔊 Play Audio Snippet
+      </button>
+    `;
+    audioPlayer.src = currentRound.audioSrc;
+    document.getElementById("play-audio-btn").addEventListener("click", () => {
+      audioPlayer.play();
+    });
+  } else {
+    sentenceEl.textContent = `"${currentRound.text}"`;
+  }
 }
 
 function triggerFlash(className) {
@@ -240,7 +280,7 @@ function triggerFlash(className) {
 }
 
 function saveData() {
-  localStorage.setItem("glotle_regional_streaks", JSON.stringify(regionalStreaks));
+  localStorage.setItem("glotle_mode_regional_streaks", JSON.stringify(modeRegionalStreaks));
   localStorage.setItem("glotle_user_stats", JSON.stringify(userStats));
 }
 
@@ -250,9 +290,9 @@ settingsOpenBtn.addEventListener("click", () => {
   const accuracy = userStats.guesses > 0 ? Math.round((userStats.correctGuesses / userStats.guesses) * 100) : 0;
   document.getElementById("stat-accuracy").textContent = `${accuracy}%`;
   
-  // Dynamically calculate the highest streak across all saved region data
-  const regionBests = Object.values(regionalStreaks).map(region => region.best || 0);
-  const maxStreak = Math.max(0, userStats.overallBestStreak || 0, ...regionBests);
+  // Calculate top streak across all modes and regions
+  const comboBests = Object.values(modeRegionalStreaks).map(item => item.best || 0);
+  const maxStreak = Math.max(0, userStats.overallBestStreak || 0, ...comboBests);
   
   document.getElementById("stat-best-streak").textContent = maxStreak;
   
